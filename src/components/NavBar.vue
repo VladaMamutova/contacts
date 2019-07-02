@@ -1,13 +1,15 @@
 <template>
   <v-navigation-drawer v-model=drawerState :clipped="$vuetify.breakpoint.lgAndUp" fixed app>
-    <v-list-tile v-for="item in items" :key="item.text">
-      <v-list-tile-action>
-        <v-icon>{{ item.icon }}</v-icon>
-      </v-list-tile-action>
-      <v-list-tile-content>
-        <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-      </v-list-tile-content>
-    </v-list-tile>
+    <v-list>
+      <v-list-tile v-for="item in items" :key="item.text" @click="alert('')">
+        <v-list-tile-action>
+          <v-icon>{{ item.icon }}</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
   </v-navigation-drawer>
 </template>
 
@@ -35,3 +37,9 @@ export default class NavBar extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.v-list__tile__title {
+  font-size: medium;
+}
+</style>

@@ -19,9 +19,9 @@
               <v-list-tile-sub-title v-html="item.phones[0]"></v-list-tile-sub-title>
             </v-list-tile-content>
 
-            <v-list-tile-action-text v-show="item.groupName != ''">
-              <v-chip color="secondary" text-color="white">
-                {{ item.groupName }}
+            <v-list-tile-action-text v-if="item.group.name">
+              <v-chip :color="item.group.color" text-color="white">
+                {{ item.group.name }}
               </v-chip>
             </v-list-tile-action-text>
           </v-list-tile>
