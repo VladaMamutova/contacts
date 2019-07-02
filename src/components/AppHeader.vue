@@ -1,5 +1,5 @@
 <template>
-    <v-toolbar :clipped-left="$vuetify.breakpoint.lgAndUp" color="cyan darken-3" dark app>
+    <v-toolbar :clipped-left="$vuetify.breakpoint.lgAndUp" color="primary" dark app>
       <v-toolbar-title class="headline">
         <v-toolbar-side-icon @click.stop="switchDrawerState()"></v-toolbar-side-icon>
         <span class="text-uppercase">Контакты</span>
@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator'
+import {Component, Vue} from 'vue-property-decorator';
 
 @Component({})
 
 export default class AppHeader extends Vue {
   // methods
-  switchDrawerState() : void {
+  private switchDrawerState(): void {
     this.$store.dispatch('SWITCH_DRAWER_STATE');
   }
 }

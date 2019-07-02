@@ -12,20 +12,20 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator'
+import {Component, Vue} from 'vue-property-decorator';
 
 @Component({})
 
 export default class NavBar extends Vue {
   // data
-  private items: { icon: string, text: string }[] = [
+  private items: Array<{ icon: string, text: string }> = [
     { icon: 'contacts', text: 'Все контакты' },
     { icon: 'group', text: 'Мои группы' },
     { icon: 'perm_contact_calendar', text: 'Дни рождения'},
-    { icon: 'import_contacts', text: 'Экспорт'}
-  ]
+    { icon: 'import_contacts', text: 'Экспорт'},
+  ];
   // computed
-  get drawerState() : boolean {
+  get drawerState(): boolean {
     return this.$store.getters.DRAWER_STATE;
   }
   set drawerState(state) {
