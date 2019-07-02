@@ -1,7 +1,7 @@
 import { Groups } from './groups';
 
 // Группа контактов.
-export class Group {
+export default class Group {
     public key: Groups; // Ключ группы.
     public name: string; // Имя группы на русском.
     public color: string; // Цвет группы.
@@ -28,7 +28,7 @@ export class Group {
                 break;
             }
             default: {
-                name = '';
+                name = 'Не определена';
                 break;
             }
         }
@@ -51,7 +51,7 @@ export class Group {
                 break;
             }
             default: {
-                color = '';
+                color = '#424242'; // grey darken-3
                 break;
             }
         }

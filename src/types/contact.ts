@@ -1,5 +1,6 @@
-import { Group } from './group';
+import Group from './group';
 import { Groups } from './groups';
+
 
 export default class Contact {
     public fio: string;
@@ -29,5 +30,9 @@ export default class Contact {
             this.birthday = birthday;
             this.company = company;
             this.photo = photo;
+        }
+
+        public isInGroup(): boolean {
+            return this.group.key !== Groups.None;
         }
 }
