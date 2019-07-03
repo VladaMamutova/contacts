@@ -9,8 +9,8 @@ export default new Vuex.Store({
   state: {
     drawerState: true, // Состояние выдвижного меню.
     contacts: [] as Contact[], // Список контактов.
-    groupToFilter: Groups.None, /* Группа, по которой отфильтрован
-    список контактов (если не выбрана - фильтр по имени)*/
+    groupToFilter: Groups.None, /* Группа, по которой отфильтрован список контактов*/
+    dialogState: false, // Состояние диалогового окна карточки контакта.
   },
   getters : {
     DRAWER_STATE: (state) => {
@@ -22,6 +22,9 @@ export default new Vuex.Store({
     GROUP_TO_FILTER: (state) => {
       return state.groupToFilter;
     },
+    DIALOG_STATE: (state) => {
+      return state.dialogState;
+    },
   },
   mutations: {
     SWITCH_DRAWER_STATE: (state): void => {
@@ -30,11 +33,14 @@ export default new Vuex.Store({
     CLOSE_DRAWER: (state): void => {
       state.drawerState = false;
     },
-    FILL_CONTACTS_IN_DEFAULT: (state, payload: Contact[] ): void => {
+    SET_CONTACTS: (state, payload: Contact[] ): void => {
       state.contacts = payload;
     },
-    CHANGE_GROUP_TO_FILTER: (state, payload: Groups ): void => {
+    SET_GROUP_TO_FILTER: (state, payload: Groups ): void => {
       state.groupToFilter = payload;
+    },
+    SET_DIALOG_STATE: (state, payload: boolean ): void => {
+      state.dialogState = payload;
     },
   },
   actions: {
@@ -45,7 +51,13 @@ export default new Vuex.Store({
       context.commit('CLOSE_DRAWER');
     },
     CHANGE_GROUP_TO_FILTER: async (context, payload: Groups) => {
-      context.commit('CHANGE_GROUP_TO_FILTER', payload);
+      context.commit('SET_GROUP_TO_FILTER', payload);
+    },
+    SHOW_DIALOG: async (context) => {
+      context.commit('SET_DIALOG_STATE', true);
+    },
+    CLOSE_DIALOG: async (context) => {
+      context.commit('SET_DIALOG_STATE', false);
     },
     FILL_CONTACTS_IN_DEFAULT: async (context) => {
       const defaultContacts: Contact[] = [
@@ -79,7 +91,7 @@ export default new Vuex.Store({
         new Contact('Морозов Кирилл Константинович', ['+380710099876']),
         new Contact('Иванченко Юрий Сергеевич', ['+380716543111'], Groups.Сolleagues),
       ];
-      context.commit('FILL_CONTACTS_IN_DEFAULT', defaultContacts);
+      context.commit('SET_CONTACTS', defaultContacts);
     },
   },
 });

@@ -8,11 +8,7 @@
 
           <groups-bar />
 
-          <v-list-tile
-            v-for="item in contacts"
-            :key="item.fio"
-            avatar
-          >
+          <v-list-tile v-for="item in contacts" :key="item.fio" avatar @click="showDialog(item)">
             <v-list-tile-avatar>
               <img :src="item.photo">
             </v-list-tile-avatar>
@@ -30,35 +26,52 @@
 
       </v-card>
     </v-flex>
+    <v-btn fab bottom right color="primary" dark fixed @click="showDialog()">
+      <v-icon>add</v-icon>
+    </v-btn>
+    <contact-card :contact="currentContact"></contact-card>
   </v-layout>
 </template>
 
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
-import GroupsBar from './GroupsBar.vue';
 import Contact from '../types/contact';
-import GroupChip from './GroupChip.vue';
 import Groups from '../types/groups';
+import GroupsBar from './GroupsBar.vue';
+import GroupChip from './GroupChip.vue';
+import ContactCard from './ContactCard.vue';
 
 @Component({
   components: {
     GroupsBar,
     GroupChip,
+    ContactCard,
   },
 })
 
 export default class ContactList extends Vue {
-  private sortedContactList: Contact[] = [];
+  private currentContact: Contact = new Contact('', ['']);
   get contacts(): Contact[] {
     return this.sortByName(this.filterByGroup(this.$store.getters.CONTACTS, this.groupToFilter));
   }
+
   private created(): void {
     this.$store.dispatch('FILL_CONTACTS_IN_DEFAULT');
   }
-  private sortByName(contacts: Contact[]): Contact[] {
-    const sortedContactList = contacts.sort(this.compareContacts);
-    return sortedContactList;
+
+  private showDialog(contact: Contact): void {
+    if (contact) {
+      this.currentContact = contact;
+    } else {
+      this.currentContact = new Contact('', ['']);
+    }
+    this.$store.dispatch('SHOW_DIALOG');
   }
+
+  private sortByName(contacts: Contact[]): Contact[] {
+    return contacts.sort(this.compareContacts);
+  }
+
   private compareContacts(contactA: Contact, contactB: Contact): number {
     if (contactA.fio > contactB.fio) {
       return 1;
@@ -68,6 +81,7 @@ export default class ContactList extends Vue {
     }
     return 0;
   }
+
   /**
    * Возвращает отфильтрованный по определённой группу массив контактов.
    * Если переданая группа не определена (group === Groups.None),

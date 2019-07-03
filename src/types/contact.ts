@@ -20,7 +20,7 @@ export default class Contact {
         website: string = '',
         birthday: string = '',
         company: string = '',
-        photo: string = 'https://www.beautifulpeople.com/cdn/beautifulpeople/images/default_profile/signup_male.png',
+        photo: string = '//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png',
         ) {
             this.fio = fio;
             this.phones = phones;
