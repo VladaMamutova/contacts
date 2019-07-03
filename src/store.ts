@@ -9,6 +9,8 @@ export default new Vuex.Store({
   state: {
     drawerState: true, // Состояние выдвижного меню.
     contacts: [] as Contact[], // Список контактов.
+    groupToFilter: Groups.None, /* Группа, по которой отфильтрован
+    список контактов (если не выбрана - фильтр по имени)*/
   },
   getters : {
     DRAWER_STATE: (state) => {
@@ -16,6 +18,9 @@ export default new Vuex.Store({
     },
     CONTACTS: (state) => {
       return state.contacts;
+    },
+    GROUP_TO_FILTER: (state) => {
+      return state.groupToFilter;
     },
   },
   mutations: {
@@ -28,6 +33,9 @@ export default new Vuex.Store({
     FILL_CONTACTS_IN_DEFAULT: (state, payload: Contact[] ): void => {
       state.contacts = payload;
     },
+    CHANGE_GROUP_TO_FILTER: (state, payload: Groups ): void => {
+      state.groupToFilter = payload;
+    },
   },
   actions: {
     SWITCH_DRAWER_STATE: async (context) => {
@@ -35,6 +43,9 @@ export default new Vuex.Store({
     },
     CLOSE_DRAWER: async (context) => {
       context.commit('CLOSE_DRAWER');
+    },
+    CHANGE_GROUP_TO_FILTER: async (context, payload: Groups) => {
+      context.commit('CHANGE_GROUP_TO_FILTER', payload);
     },
     FILL_CONTACTS_IN_DEFAULT: async (context) => {
       const defaultContacts: Contact[] = [

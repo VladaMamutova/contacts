@@ -28,7 +28,7 @@ export default class Group {
                 break;
             }
             default: {
-                name = 'Не определена';
+                name = 'Все';
                 break;
             }
         }
@@ -43,7 +43,7 @@ export default class Group {
                 break;
             }
             case Groups.Friends: {
-                color = '#8E24AA'; // purple darken-1
+                color = '#FFAB00'; // amber accent-4
                 break;
             }
             case Groups.Сolleagues: {
@@ -51,7 +51,7 @@ export default class Group {
                 break;
             }
             default: {
-                color = '#424242'; // grey darken-3
+                color = '#0091EA'; // light-blue accent-4
                 break;
             }
         }
