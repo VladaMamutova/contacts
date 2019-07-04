@@ -15,7 +15,7 @@
 
             <v-list-tile-content>
               <v-list-tile-title v-html="item.fio"></v-list-tile-title>
-              <v-list-tile-sub-title v-html="item.phones[0]"></v-list-tile-sub-title>
+              <v-list-tile-sub-title v-html="'+' + item.phones[0]"></v-list-tile-sub-title>
             </v-list-tile-content>
 
             <v-list-tile-action-text v-if="item.isInGroup()">

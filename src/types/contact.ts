@@ -5,7 +5,7 @@ import { Groups } from './groups';
 export default class Contact {
     public fio: string;
     public phones: string[];
-    public email: string[];
+    public emails: string[];
     public group: Group;
     public website: string;
     public birthday: string;
@@ -25,7 +25,7 @@ export default class Contact {
             this.fio = fio;
             this.phones = phones;
             this.group = new Group(groupKey);
-            this.email = emails;
+            this.emails = emails;
             this.website = website;
             this.birthday = birthday;
             this.company = company;

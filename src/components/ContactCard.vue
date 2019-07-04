@@ -16,10 +16,12 @@
           </v-layout>
         </v-flex>
         <v-flex xs11>
-          <v-text-field type="tel"
-            prepend-icon="phone"
-            placeholder="(071) 000 - 0000"
-            mask="(###) #### - ###"
+          <v-text-field
+            v-for="(phone, index) in contact.phones"
+            :key="index" v-model="contact.phones[index]"
+            type="tel" prepend-icon="phone"
+            placeholder="__ (___) ___ __ __"
+            prefix="+" mask="## (###) ### ## ##"
           ></v-text-field>
         </v-flex>
         <v-flex xs1>
@@ -28,7 +30,11 @@
           </v-btn>
         </v-flex>
         <v-flex xs11>
-          <v-text-field prepend-icon="mail" placeholder="Email" v-model="contact.email"></v-text-field>
+          <v-text-field v-for="(email, index) in contact.emails"
+          :key="index" prepend-inner-icon="mail"
+          placeholder="Email"
+          v-model="contact.emails[index]"
+          :input="validateEmail(email)" :error-messages="emailErrorMessage" />
         </v-flex>
         <v-flex xs1>
           <v-btn flat icon color="primary">
@@ -36,13 +42,13 @@
           </v-btn>
         </v-flex>
        <v-flex xs4>
-          <v-text-field prepend-icon="web" placeholder="День рождения" v-model="contact.birthday"></v-text-field>
+          <v-text-field prepend-inner-icon="event_note" placeholder="День рождения" v-model="contact.birthday"></v-text-field>
         </v-flex>
          <v-flex xs8>
-          <v-text-field prepend-icon="business" placeholder="Компания" v-model="contact.company"></v-text-field>
+          <v-text-field prepend-inner-icon="business" placeholder="Компания" v-model="contact.company"></v-text-field>
         </v-flex>
         <v-flex xs12>
-          <v-text-field prepend-icon="web" placeholder="Веб-сайт"  v-model="contact.website"></v-text-field>
+          <v-text-field prepend-inner-icon="language" placeholder="Веб-сайт" v-model="contact.website"></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
@@ -70,6 +76,9 @@ import Contact from '../types/contact';
 })
 
 export default class ContactCard extends Vue {
+  private emailMask: RegExp = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+\.[A-Za-z]{2,4}$/;
+  private emailErrorMessage: string = '';
+
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;
   }
@@ -77,6 +86,16 @@ export default class ContactCard extends Vue {
       if (!state) {
         this.closeDialog();
       }
+  }
+  private validateEmail(value: string): void {
+    if (value != null && typeof value !== 'undefined') {
+      value = value.trim();
+    }
+    if (value && !this.emailMask.test(value)) {
+      this.emailErrorMessage = 'Некорректный e-mail адрес.';
+    } else {
+      this.emailErrorMessage = '';
+    }
   }
   private closeDialog(): void {
     this.$store.dispatch('CLOSE_DIALOG');
