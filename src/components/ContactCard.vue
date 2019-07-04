@@ -52,8 +52,33 @@
           </v-layout>
         </v-container>
        <v-flex xs4>
-          <v-text-field prepend-inner-icon="event_note" placeholder="День рождения" v-model="contact.birthday"></v-text-field>
-        </v-flex>
+      <v-menu
+          ref="menu"
+          v-model="menu"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          lazy
+          transition="scale-transition"
+          offset-y
+          full-width
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              v-model="dateFormatted"
+              label="Дата рождения"
+              persistent-hint
+              prepend-icon="event"
+              @blur="date = parseDate(dateFormatted)"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="contact.birthday" locale="ru" no-title
+          @input="menu = false"></v-date-picker>
+        </v-menu>
+    </v-flex>
          <v-flex xs8>
           <v-text-field prepend-inner-icon="business" placeholder="Компания" v-model="contact.company"></v-text-field>
         </v-flex>
@@ -81,6 +106,8 @@ export default class ContactCard extends Vue {
   private emailMask: RegExp = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+\.[A-Za-z]{2,4}$/;
   private emailErrorMessages: string[] = [];
 
+  private menu: boolean = false;
+
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;
   }
@@ -98,6 +125,9 @@ export default class ContactCard extends Vue {
     }
     if (clone.emails.length === 0) {
       clone.emails.push('');
+    }
+    if (!clone.birthday) {
+      clone.birthday = new Date().toISOString().substr(0, 10);
     }
 
     return clone;
@@ -146,6 +176,34 @@ export default class ContactCard extends Vue {
 
   private closeDialog(): void {
     this.$store.dispatch('CLOSE_DIALOG');
+  }
+
+  private formatDate(date: string): string {
+    if (!date) {
+      return '';
+    }
+    const [year, month, day] = date.split('-');
+    return `${day}.${month}.${year}`;
+  }
+
+  private parseDate(date: string): string {
+    if (!date) {
+      return '';
+    }
+    const [month, day, year] = date.split('.');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  get dateFormatted(): string {
+    return this.formatDate(this.contact.birthday.substr(0, 10));
+  }
+
+  set dateFormatted(date: string) {
+    if (date === null) {
+      this.contact.birthday = '';
+    } else {
+      this.contact.birthday = date;
+    }
   }
 }
 </script>

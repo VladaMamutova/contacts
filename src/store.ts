@@ -83,21 +83,21 @@ export default new Vuex.Store({
     FILL_CONTACTS_IN_DEFAULT: async (context) => {
       const defaultContacts: Contact[] = [
         new Contact('Сестричка', ['380713333333', '380714445577'], Groups.Family,
-        ['likamamutova@gmail.com', 'likamamutova@yandex.ru'], 'https:\\\\vk.com\\likamamutova', '11.07.2000',
+        ['likamamutova@gmail.com', 'likamamutova@yandex.ru'], 'https:\\\\vk.com\\likamamutova', '2000-07-11',
         undefined, 'https://scontent-frt3-2.cdninstagram.com/vp/d4537dd9748a1f' +
         '5ae17faba22640ee02/5DB829CF/t51.2885-19/s150x150/49756238_337247823540542' +
         '_2823749351384285184_n.jpg?_nc_ht=scontent-frt3-2.cdninstagram.com'),
         new Contact('Мама', ['380716767666'], Groups.Family,
-        ['tatyanamamutova@gmail.com'], undefined, '11.06.1973'),
+        ['tatyanamamutova@gmail.com'], undefined, '1973-06-11'),
         new Contact('Папа', ['380718989888'], Groups.Family,
-        ['alexmamutov@gmail.com'], undefined, '06.04.1973'),
+        ['alexmamutov@gmail.com'], undefined, '1973-04-06'),
         new Contact('Алина Ермолаева', ['380714545454'], Groups.Friends,
-        ['mandxalinka@gmail.com'], 'https://www.behance.net/mandxalinka', '08.01.1999',
+        ['mandxalinka@gmail.com'], 'https://www.behance.net/mandxalinka', '1999-01-08',
         undefined, 'https://scontent-frt3-2.cdninstagram.com/vp/d8b7f85e448d41be55' +
         'babdcbe397c826/5DBD6E53/t51.2885-19/s150x150/41726968_1085408181626092' +
         '_597941335449665536_n.jpg?_nc_ht=scontent-frt3-2.cdninstagram.com'),
         new Contact('Катя Головачёва', ['380719090999'], Groups.Friends,
-        ['ekaterinagolovachova@gmail.com'], '', '05.07.1999',
+        ['ekaterinagolovachova@gmail.com'], '', '1999-07-05',
         undefined, 'https://scontent-frt3-2.cdninstagram.com/vp/a166d138' +
         'b8febccedee2b00812c8d3ab/5DC3F72C/t51.2885-15/e35/13687028' +
         '_1033094640071914_701415249_n.jpg?_nc_ht=scontent-frt3-2.cdninstagram.com'),

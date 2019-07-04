@@ -6,7 +6,7 @@ Vue.use(Vuetify, {
   theme: {
     primary: '#00838F', // cyan darken-3
     secondary: '#424242', // grey darken-3
-    accent: '#00E5FF', // cyan accent-3
+    accent: '#00B8D4', // cyan accent-3
     error: '#FF5252',
     info: '#2196F3',
     success: '#4CAF50',
