@@ -29,7 +29,7 @@
     <v-btn fab bottom right color="primary" dark fixed @click="showDialog()">
       <v-icon>add</v-icon>
     </v-btn>
-    <contact-card :contact="currentContact"></contact-card>
+    <contact-card></contact-card>
   </v-layout>
 </template>
 
@@ -50,7 +50,6 @@ import ContactCard from './ContactCard.vue';
 })
 
 export default class ContactList extends Vue {
-  private currentContact: Contact = new Contact();
   get contacts(): Contact[] {
     return this.sortByName(this.filterByGroup(this.$store.getters.CONTACTS, this.groupToFilter));
   }
@@ -60,11 +59,7 @@ export default class ContactList extends Vue {
   }
 
   private showDialog(contact: Contact): void {
-    if (contact) {
-      this.currentContact = contact;
-    } else {
-      this.currentContact = new Contact();
-    }
+    this.$store.dispatch('SELECT_CONTACT', contact);
     this.$store.dispatch('SHOW_DIALOG');
   }
 

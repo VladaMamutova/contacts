@@ -22,17 +22,36 @@ export default class Contact {
         company: string = '',
         photo: string = '//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png',
         ) {
-            this.fio = fio;
-            this.phones = phones;
-            this.group = new Group(groupKey);
-            this.emails = emails;
-            this.website = website;
-            this.birthday = birthday;
-            this.company = company;
-            this.photo = photo;
-        }
+        this.fio = fio;
+        this.phones = phones;
+        this.group = new Group(groupKey);
+        this.emails = emails;
+        this.website = website;
+        this.birthday = birthday;
+        this.company = company;
+        this.photo = photo;
+    }
 
-        public isInGroup(): boolean {
-            return this.group.key !== Groups.None;
-        }
+    public isInGroup(): boolean {
+        return this.group.key !== Groups.None;
+    }
+
+    public clone(): Contact {
+        const clone = new Contact();
+        clone.fio = this.fio;
+        clone.phones = [];
+        this.phones.forEach((phone) => {
+            clone.phones.push(phone);
+        });
+        clone.group = this.group;
+        clone.emails = [];
+        this.emails.forEach((email) => {
+            clone.emails.push(email);
+        });
+        clone.website = this.website;
+        clone.birthday = this.birthday;
+        clone.company = this.company;
+        clone.photo = this.photo;
+        return clone;
+    }
 }

@@ -9,7 +9,9 @@ export default new Vuex.Store({
   state: {
     drawerState: true, // Состояние выдвижного меню.
     contacts: [] as Contact[], // Список контактов.
-    groupToFilter: Groups.None, /* Группа, по которой отфильтрован список контактов*/
+    currentContact: new Contact(), // Текущий контакт.
+    currentContactClone: new Contact(), // Копия текущего контакта (редактируемая).
+    groupToFilter: Groups.None, // Группа, по которой отфильтрован список контактов.
     dialogState: false, // Состояние диалогового окна карточки контакта.
   },
   getters : {
@@ -18,6 +20,12 @@ export default new Vuex.Store({
     },
     CONTACTS: (state) => {
       return state.contacts;
+    },
+    CURRENT_CONTACT: (state) => {
+      return state.currentContact;
+    },
+    CURRENT_CONTACT_CLONE: (state) => {
+      return state.currentContactClone;
     },
     GROUP_TO_FILTER: (state) => {
       return state.groupToFilter;
@@ -36,6 +44,13 @@ export default new Vuex.Store({
     SET_CONTACTS: (state, payload: Contact[] ): void => {
       state.contacts = payload;
     },
+    SET_CURRENT_CONTACT: (state, payload: Contact ): void => {
+      state.currentContact = payload;
+      state.currentContactClone = payload.clone();
+    },
+    SET_CURRENT_CONTACT_CLONE: (state, payload: Contact ): void => {
+      state.currentContactClone = payload;
+    },
     SET_GROUP_TO_FILTER: (state, payload: Groups ): void => {
       state.groupToFilter = payload;
     },
@@ -49,6 +64,12 @@ export default new Vuex.Store({
     },
     CLOSE_DRAWER: async (context) => {
       context.commit('CLOSE_DRAWER');
+    },
+    SELECT_CONTACT: async (context, payload: Contact) => {
+      context.commit('SET_CURRENT_CONTACT', payload);
+    },
+    UPDATE_CURRENT_CONTACT_CLONE: async (context, payload: Contact) => {
+      context.commit('SET_CURRENT_CONTACT_CLONE', payload);
     },
     CHANGE_GROUP_TO_FILTER: async (context, payload: Groups) => {
       context.commit('SET_GROUP_TO_FILTER', payload);

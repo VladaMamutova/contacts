@@ -16,11 +16,11 @@
           </v-layout>
         </v-flex>
         <v-container fluid class="unpadding">
-          <v-layout row v-for="(phone, index) in phones" :key="index">
+          <v-layout row v-for="(phone, index) in contact.phones" :key="index">
             <v-flex grow>
               <v-text-field
-                v-model="phones[index]"
-                :input="updatePhones(phone, index)"
+                v-model="contact.phones[index]"
+                :input="updatePhoneTextField(phone, index)"
                 type="tel" prepend-icon="phone"
                 placeholder="__ (___) ___ __ __"
                 prefix="+" mask="## (###) ### ## ##"
@@ -34,12 +34,12 @@
           </v-layout>
         </v-container>
         <v-container fluid class="unpadding">
-          <v-layout row v-for="(email, index) in emails" :key="index">
+          <v-layout row v-for="(email, index) in contact.emails" :key="index">
             <v-flex grow>
               <v-text-field
               prepend-inner-icon="mail"
               placeholder="Email"
-              v-model="emails[index]"
+              v-model="contact.emails[index]"
               :input="validateEmail(email)" :error-messages="emailErrorMessage" />
             </v-flex>
             <v-flex xs1 class="bottom" v-if="email">
@@ -70,79 +70,40 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Prop, Vue} from 'vue-property-decorator';
 import Contact from '../types/contact';
 
-@Component({
-  props: {
-    contact: {
-      type: Contact,
-      required: false,
-      default: new Contact(),
-    },
-  },
-})
+@Component({})
 
 export default class ContactCard extends Vue {
   private emailMask: RegExp = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+\.[A-Za-z]{2,4}$/;
   private emailErrorMessage: string = '';
-  private emptyPhone = -1;
 
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;
   }
+
   set dialogState(state: boolean) {
       if (!state) {
         this.closeDialog();
       }
   }
 
-  get phones(): string[] {
-    return this.$props.contact.phones;
+  get contact(): Contact {
+    return this.$store.getters.CURRENT_CONTACT_CLONE;
   }
 
-  set phones(array: string[]) {
-    this.$props.contact.phones = array;
+  set contact(value: Contact) {
+    this.$store.dispatch('UPDATE_CURRENT_CONTACT_CLONE', value);
   }
 
-  private updatePhones(updatedPhone: string, index: number): void {
-    if (!updatedPhone && index !== this.emptyPhone ||
-    updatedPhone && index === this.emptyPhone) {
-      this.$props.contact.phones = this.setOneEmptyItem(this.$props.contact.phones);
+  private updatePhoneTextField(updatedPhone: string, index: number): void {
+    if (!updatedPhone && index !== this.contact.phones.length - 1) {
+      this.contact.phones.splice(index, 1);
     }
-  }
-
-  get emails(): string[] {
-    return this.setOneEmptyItem(this.$props.contact.emails);
-  }
-
-  set emails(array: string[]) {
-    this.$props.contact.emails = array;
-  }
-
-  private setOneEmptyItem(array: string[]): string[] {
-    let outputArray = [];
-    if (array === null) {
-      outputArray = [''];
-      this.emptyPhone = 0;
-    } else {
-      let firstEmpty = -1;
-      for (let i = 0; i < array.length; i++) {
-        if (!array[i]) {
-          if (firstEmpty < 0) {
-            firstEmpty = i;
-            outputArray.push(array[i]);
-          }
-        } else {
-          outputArray.push(array[i]);
-        }
-      }
-      if (firstEmpty < 0) {
-        outputArray.push('');
-      }
-      this.emptyPhone = firstEmpty;
+    if (updatedPhone && index === this.contact.phones.length - 1) {
+      this.contact.phones.push('');
     }
-    return outputArray;
   }
 
   private validateEmail(value: string): void {
@@ -155,6 +116,7 @@ export default class ContactCard extends Vue {
       this.emailErrorMessage = '';
     }
   }
+
   private closeDialog(): void {
     this.$store.dispatch('CLOSE_DIALOG');
   }
