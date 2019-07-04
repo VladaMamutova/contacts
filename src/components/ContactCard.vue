@@ -40,7 +40,9 @@
               prepend-inner-icon="mail"
               placeholder="Email"
               v-model="contact.emails[index]"
-              :input="validateEmail(email)" :error-messages="emailErrorMessage" />
+              :input="updateEmailTextField(email, index)"
+              :error-messages="emailErrorMessages[index]" 
+              @blur="validateEmails()"/>
             </v-flex>
             <v-flex xs1 class="bottom" v-if="email">
               <v-btn flat icon color="primary">
@@ -77,7 +79,7 @@ import Contact from '../types/contact';
 
 export default class ContactCard extends Vue {
   private emailMask: RegExp = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+\.[A-Za-z]{2,4}$/;
-  private emailErrorMessage: string = '';
+  private emailErrorMessages: string[] = [];
 
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;
@@ -90,7 +92,15 @@ export default class ContactCard extends Vue {
   }
 
   get contact(): Contact {
-    return this.$store.getters.CURRENT_CONTACT_CLONE;
+    const clone = this.$store.getters.CURRENT_CONTACT_CLONE;
+    if (clone.phones.length === 0) {
+      clone.phones.push('');
+    }
+    if (clone.emails.length === 0) {
+      clone.emails.push('');
+    }
+
+    return clone;
   }
 
   set contact(value: Contact) {
@@ -106,15 +116,32 @@ export default class ContactCard extends Vue {
     }
   }
 
-  private validateEmail(value: string): void {
+  private updateEmailTextField(updatedEmail: string, index: number): void {
+    if (!updatedEmail && index !== this.contact.emails.length - 1) {
+      this.contact.emails.splice(index, 1);
+    }
+    if (updatedEmail && index === this.contact.emails.length - 1) {
+      this.contact.emails.push('');
+    }
+  }
+
+  private validateEmails(): void {
+    this.emailErrorMessages = [];
+    for (let i = 0; i < this.contact.emails.length; i++) {
+      this.emailErrorMessages[i] = this.validateEmail(this.contact.emails[i]);
+    }
+  }
+
+  private validateEmail(value: string): string {
+    let errorMessage = '';
     if (value != null && typeof value !== 'undefined') {
       value = value.trim();
     }
     if (value && !this.emailMask.test(value)) {
-      this.emailErrorMessage = 'Некорректный e-mail адрес.';
-    } else {
-      this.emailErrorMessage = '';
+      errorMessage = 'Некорректный e-mail адрес.';
     }
+
+    return errorMessage;
   }
 
   private closeDialog(): void {
