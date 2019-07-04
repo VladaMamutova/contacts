@@ -50,7 +50,7 @@ import ContactCard from './ContactCard.vue';
 })
 
 export default class ContactList extends Vue {
-  private currentContact: Contact = new Contact('', ['']);
+  private currentContact: Contact = new Contact();
   get contacts(): Contact[] {
     return this.sortByName(this.filterByGroup(this.$store.getters.CONTACTS, this.groupToFilter));
   }
@@ -63,7 +63,7 @@ export default class ContactList extends Vue {
     if (contact) {
       this.currentContact = contact;
     } else {
-      this.currentContact = new Contact('', ['']);
+      this.currentContact = new Contact();
     }
     this.$store.dispatch('SHOW_DIALOG');
   }

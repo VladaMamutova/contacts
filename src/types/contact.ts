@@ -13,10 +13,10 @@ export default class Contact {
     public photo: string;
 
     constructor(
-        fio: string,
-        phones: string[],
+        fio: string = '',
+        phones: string[] = [],
         groupKey = Groups.None,
-        emails: string[] = [''],
+        emails: string[] = [],
         website: string = '',
         birthday: string = '',
         company: string = '',

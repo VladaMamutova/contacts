@@ -15,32 +15,40 @@
             <v-text-field placeholder="ФИО контакта" v-model="contact.fio"></v-text-field>
           </v-layout>
         </v-flex>
-        <v-flex xs11>
-          <v-text-field
-            v-for="(phone, index) in contact.phones"
-            :key="index" v-model="contact.phones[index]"
-            type="tel" prepend-icon="phone"
-            placeholder="__ (___) ___ __ __"
-            prefix="+" mask="## (###) ### ## ##"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs1>
-          <v-btn flat icon color="primary">
-            <v-icon>remove</v-icon>
-          </v-btn>
-        </v-flex>
-        <v-flex xs11>
-          <v-text-field v-for="(email, index) in contact.emails"
-          :key="index" prepend-inner-icon="mail"
-          placeholder="Email"
-          v-model="contact.emails[index]"
-          :input="validateEmail(email)" :error-messages="emailErrorMessage" />
-        </v-flex>
-        <v-flex xs1>
-          <v-btn flat icon color="primary">
-            <v-icon>remove</v-icon>
-          </v-btn>
-        </v-flex>
+        <v-container fluid class="unpadding">
+          <v-layout row v-for="(phone, index) in phones" :key="index">
+            <v-flex grow>
+              <v-text-field
+                v-model="phones[index]"
+                :input="updatePhones(phone, index)"
+                type="tel" prepend-icon="phone"
+                placeholder="__ (___) ___ __ __"
+                prefix="+" mask="## (###) ### ## ##"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs1 class="bottom" v-if="phone">
+              <v-btn flat icon color="primary">
+                <v-icon>remove</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
+        <v-container fluid class="unpadding">
+          <v-layout row v-for="(email, index) in emails" :key="index">
+            <v-flex grow>
+              <v-text-field
+              prepend-inner-icon="mail"
+              placeholder="Email"
+              v-model="emails[index]"
+              :input="validateEmail(email)" :error-messages="emailErrorMessage" />
+            </v-flex>
+            <v-flex xs1 class="bottom" v-if="email">
+              <v-btn flat icon color="primary">
+                <v-icon>remove</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
        <v-flex xs4>
           <v-text-field prepend-inner-icon="event_note" placeholder="День рождения" v-model="contact.birthday"></v-text-field>
         </v-flex>
@@ -70,7 +78,7 @@ import Contact from '../types/contact';
     contact: {
       type: Contact,
       required: false,
-      default: new Contact('', ['']),
+      default: new Contact(),
     },
   },
 })
@@ -78,6 +86,7 @@ import Contact from '../types/contact';
 export default class ContactCard extends Vue {
   private emailMask: RegExp = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+\.[A-Za-z]{2,4}$/;
   private emailErrorMessage: string = '';
+  private emptyPhone = -1;
 
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;
@@ -87,6 +96,55 @@ export default class ContactCard extends Vue {
         this.closeDialog();
       }
   }
+
+  get phones(): string[] {
+    return this.$props.contact.phones;
+  }
+
+  set phones(array: string[]) {
+    this.$props.contact.phones = array;
+  }
+
+  private updatePhones(updatedPhone: string, index: number): void {
+    if (!updatedPhone && index !== this.emptyPhone ||
+    updatedPhone && index === this.emptyPhone) {
+      this.$props.contact.phones = this.setOneEmptyItem(this.$props.contact.phones);
+    }
+  }
+
+  get emails(): string[] {
+    return this.setOneEmptyItem(this.$props.contact.emails);
+  }
+
+  set emails(array: string[]) {
+    this.$props.contact.emails = array;
+  }
+
+  private setOneEmptyItem(array: string[]): string[] {
+    let outputArray = [];
+    if (array === null) {
+      outputArray = [''];
+      this.emptyPhone = 0;
+    } else {
+      let firstEmpty = -1;
+      for (let i = 0; i < array.length; i++) {
+        if (!array[i]) {
+          if (firstEmpty < 0) {
+            firstEmpty = i;
+            outputArray.push(array[i]);
+          }
+        } else {
+          outputArray.push(array[i]);
+        }
+      }
+      if (firstEmpty < 0) {
+        outputArray.push('');
+      }
+      this.emptyPhone = firstEmpty;
+    }
+    return outputArray;
+  }
+
   private validateEmail(value: string): void {
     if (value != null && typeof value !== 'undefined') {
       value = value.trim();
@@ -102,4 +160,13 @@ export default class ContactCard extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.unpadding {
+  padding: 0px;
+}
+.bottom {
+  margin: auto auto 12px auto;
+}
+</style>
 
