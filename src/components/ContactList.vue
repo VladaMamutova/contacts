@@ -56,6 +56,9 @@ export default class ContactList extends Vue {
   }
 
   private showDialog(contact: Contact): void {
+    if (contact === null || contact === undefined) {
+      contact = new Contact();
+    }
     this.$store.dispatch('SELECT_CONTACT', contact);
     this.$store.dispatch('SHOW_DIALOG');
   }

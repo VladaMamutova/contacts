@@ -40,10 +40,10 @@ export class GroupChip extends Vue {
     }
   }
   private selectGroup(): void {
-    if (this.$props.selected === false) {
+    if (!this.$props.disabled && !this.$props.selected) {
       this.$props.selected = !this.$props.selected;
+      this.$store.dispatch('CHANGE_GROUP_TO_FILTER', this.$props.group.key);
     }
-    this.$store.dispatch('CHANGE_GROUP_TO_FILTER', this.$props.group.key);
   }
 }
 

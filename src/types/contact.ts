@@ -80,4 +80,16 @@ export default class Contact {
         clone.photo = this.photo;
         return clone;
     }
+
+    public IsEmpty(): boolean {
+        if (!this.fio && !this.website && !this.birthday && !this.company &&
+            this.phones.length === 0 && this.emails.length === 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public IsReadyToSave() {
+        return this.fio || this.phones.length > 0;
+    }
 }

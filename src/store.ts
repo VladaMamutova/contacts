@@ -49,17 +49,20 @@ export default new Vuex.Store({
     SET_SELECTED_PAGE: (state, payload: Pages): void => {
       state.selectedPage = payload;
     },
-    SET_CONTACTS: (state, payload: Contact[] ): void => {
+    SET_CONTACTS: (state, payload: Contact[]): void => {
       state.contacts = payload;
     },
-    SET_CURRENT_CONTACT: (state, payload: Contact ): void => {
+    ADD_CONTACT: (state, payload: Contact): void => {
+      state.contacts.push(payload);
+    },
+    SET_CURRENT_CONTACT: (state, payload: Contact): void => {
       state.currentContact = payload;
       state.currentContactClone = payload.clone();
     },
-    SET_CURRENT_CONTACT_CLONE: (state, payload: Contact ): void => {
+    SET_CURRENT_CONTACT_CLONE: (state, payload: Contact): void => {
       state.currentContactClone = payload;
     },
-    SET_GROUP_TO_FILTER: (state, payload: Groups ): void => {
+    SET_GROUP_TO_FILTER: (state, payload: Groups): void => {
       state.groupToFilter = payload;
     },
     SET_DIALOG_STATE: (state, payload: boolean ): void => {
@@ -79,6 +82,9 @@ export default new Vuex.Store({
     SELECT_CONTACT: async (context, payload: Contact) => {
       context.commit('SET_CURRENT_CONTACT', payload);
     },
+    CLOSE_CURRENT_CONTACT: async (context) => {
+      context.commit('SET_CURRENT_CONTACT', new Contact());
+    },
     UPDATE_CURRENT_CONTACT_CLONE: async (context, payload: Contact) => {
       context.commit('SET_CURRENT_CONTACT_CLONE', payload);
     },
@@ -90,6 +96,12 @@ export default new Vuex.Store({
     },
     CLOSE_DIALOG: async (context) => {
       context.commit('SET_DIALOG_STATE', false);
+    },
+    ADD_CONTACT: async (context, payload: Contact) => {
+      context.commit('ADD_CONTACT', payload);
+    },
+    DELETE_CONTACT: async (context, payload: Contact) => {
+      context.commit('DELETE_CONTACT', payload);
     },
     FILL_CONTACTS_IN_DEFAULT: async (context) => {
       const defaultContacts: Contact[] = [

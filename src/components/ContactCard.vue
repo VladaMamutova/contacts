@@ -1,9 +1,7 @@
 <template>
     <v-dialog v-model="dialogState" width="800px">
       <v-card>
-    <v-card-title class="grey lighten-4 py-4 title">
-      Новый контакт
-    </v-card-title>
+    <v-card-title class="grey lighten-4 py-4 title">{{ title }}</v-card-title>
     <v-container grid-list-sm class="pa-4">
       <v-layout row wrap>
         <v-flex xs12 align-center justify-space-between>
@@ -27,7 +25,7 @@
               ></v-text-field>
             </v-flex>
             <v-flex xs1 class="bottom" v-if="phone">
-              <v-btn flat icon color="primary">
+              <v-btn flat icon color="primary" @click="updatePhoneTextField('', index)">
                 <v-icon>remove</v-icon>
               </v-btn>
             </v-flex>
@@ -45,7 +43,7 @@
               @blur="validateEmails()"/>
             </v-flex>
             <v-flex xs1 class="bottom" v-if="email">
-              <v-btn flat icon color="primary">
+              <v-btn flat icon color="primary" @click="updateEmailTextField('', index)">
                 <v-icon>remove</v-icon>
               </v-btn>
             </v-flex>
@@ -73,9 +71,10 @@
       </v-layout>
     </v-container>
     <v-card-actions>
+      <v-btn flat v-if="deleteAction" @click="deleteContact()">{{ deleteAction }}</v-btn>
       <v-spacer></v-spacer>
+      <v-btn flat @click="performAction()">{{ action }}</v-btn>
       <v-btn flat color="primary" @click="closeDialog()">Закрыть</v-btn>
-      <v-btn flat @click="closeDialog()">Изменить</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
@@ -88,6 +87,10 @@ import Contact from '../types/contact';
 @Component({})
 
 export default class ContactCard extends Vue {
+  private title: string = '';
+  private action: string = '';
+  private deleteAction: string = '';
+
   private emailMask: RegExp = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+\.[A-Za-z]{2,4}$/;
   private emailErrorMessages: string[] = [];
 
@@ -105,14 +108,22 @@ export default class ContactCard extends Vue {
 
   get contact(): Contact {
     const clone = this.$store.getters.CURRENT_CONTACT_CLONE;
+
+    if (!this.title) {
+      if (clone.IsEmpty()) {
+        this.title = 'Новый контакт';
+        this.action = 'Создать';
+      } else {
+        this.title = 'Просмотр контакта';
+        this.action = 'Изменить';
+        this.deleteAction = 'Удалить';
+      }
+    }
     if (clone.phones.length === 0) {
       clone.phones.push('');
     }
     if (clone.emails.length === 0) {
       clone.emails.push('');
-    }
-    if (!clone.birthday) {
-      clone.birthday = new Date().toISOString().substr(0, 10);
     }
 
     return clone;
@@ -159,7 +170,20 @@ export default class ContactCard extends Vue {
     return errorMessage;
   }
 
+  private performAction(): void {
+    if (this.action === 'Изменить') {
+
+    } else if (this.action === 'Создать') {
+      this.$store.dispatch('ADD_CONTACT', this.contact);
+    }
+
+    this.closeDialog();
+  }
+
   private closeDialog(): void {
+    this.title = '';
+    this.action = '';
+    this.deleteAction = '';
     this.$store.dispatch('CLOSE_DIALOG');
   }
 
