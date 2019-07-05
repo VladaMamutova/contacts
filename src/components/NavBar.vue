@@ -22,7 +22,6 @@ export default class NavBar extends Vue {
   // data
   private items: Array<{ icon: string, text: string }> = [
     { icon: 'contacts', text: 'Все контакты' },
-    { icon: 'group', text: 'Мои группы' },
     { icon: 'event_note', text: 'Дни рождения'},
     { icon: 'import_contacts', text: 'Экспорт'},
   ];

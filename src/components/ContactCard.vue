@@ -52,31 +52,16 @@
           </v-layout>
         </v-container>
        <v-flex xs4>
-      <v-menu
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          lazy
-          transition="scale-transition"
-          offset-y
-          full-width
-          max-width="290px"
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="dateFormatted"
-              label="Дата рождения"
-              persistent-hint
-              prepend-icon="event"
-              @blur="date = parseDate(dateFormatted)"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="contact.birthday" locale="ru" no-title
-          @input="menu = false"></v-date-picker>
+      <v-menu ref="menu" v-model="menu" :close-on-content-click="false"
+        :nudge-right="40" lazy transition="scale-transition"
+        offset-y full-width max-width="290px" min-width="290px">
+        <template v-slot:activator="{ on }">
+          <v-text-field v-model="dateFormatted" label="Дата рождения"
+            persistent-hint prepend-icon="event"
+            @blur="date = parseDate(dateFormatted)" readonly v-on="on"/>
+        </template>
+        <v-date-picker v-model="contact.birthday" locale="ru" no-title
+        @input="menu = false"></v-date-picker>
         </v-menu>
     </v-flex>
          <v-flex xs8>
