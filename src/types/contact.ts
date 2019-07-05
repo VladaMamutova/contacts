@@ -36,6 +36,32 @@ export default class Contact {
         return this.group.key !== Groups.None;
     }
 
+    public getFormattedMainPhoneNumber() {
+        let phoneNumber = '';
+        if (this.phones.length > 0) {
+            phoneNumber = '+' + this.phones[0];
+        }
+
+        return phoneNumber;
+    }
+
+    public getMonthDateOfBirthday(): string {
+      let birthday: string = '';
+      if (this.birthday) {
+        const [year, month, date] = this.birthday.split('-');
+        birthday = month + date;
+      }
+      return birthday;
+    }
+
+    public getFormattedBirthday(): string {
+        if (!this.birthday) {
+          return '';
+        }
+        const [year, month, day] = this.birthday.split('-');
+        return `${day}.${month}.${year}`;
+    }
+
     public clone(): Contact {
         const clone = new Contact();
         clone.fio = this.fio;

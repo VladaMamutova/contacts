@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import Contact from './types/contact';
-import { Groups } from './types/groups';
+import Groups from './types/groups';
+import Pages from './types/pages';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     drawerState: true, // Состояние выдвижного меню.
+    selectedPage: Pages.ContactList, // Выбранная страница меню.
     contacts: [] as Contact[], // Список контактов.
     currentContact: new Contact(), // Текущий контакт.
     currentContactClone: new Contact(), // Копия текущего контакта (редактируемая).
@@ -17,6 +19,9 @@ export default new Vuex.Store({
   getters : {
     DRAWER_STATE: (state) => {
       return state.drawerState;
+    },
+    SELECTED_PAGE: (state) => {
+      return state.selectedPage;
     },
     CONTACTS: (state) => {
       return state.contacts;
@@ -41,6 +46,9 @@ export default new Vuex.Store({
     CLOSE_DRAWER: (state): void => {
       state.drawerState = false;
     },
+    SET_SELECTED_PAGE: (state, payload: Pages): void => {
+      state.selectedPage = payload;
+    },
     SET_CONTACTS: (state, payload: Contact[] ): void => {
       state.contacts = payload;
     },
@@ -64,6 +72,9 @@ export default new Vuex.Store({
     },
     CLOSE_DRAWER: async (context) => {
       context.commit('CLOSE_DRAWER');
+    },
+    SELECT_PAGE: async (context, payload: Pages) => {
+      context.commit('SET_SELECTED_PAGE', payload);
     },
     SELECT_CONTACT: async (context, payload: Contact) => {
       context.commit('SET_CURRENT_CONTACT', payload);

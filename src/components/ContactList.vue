@@ -1,18 +1,18 @@
 <template>
-  <v-layout row>
+  <v-layout row v-show="isSelectedPage()">
     <v-flex xs12 sm10 offset-sm1>
       <v-card>
         <v-list subheader>
           <v-subheader>Все контакты</v-subheader>
           <groups-bar />
-          <v-list-tile v-for="item in contacts" :key="item.fio" avatar @click="showDialog(item)">
-            <v-list-tile-avatar><img :src="item.photo"></v-list-tile-avatar>
+          <v-list-tile v-for="contact in contacts" :key="contact.fio" avatar @click="showDialog(contact)">
+            <v-list-tile-avatar><img :src="contact.photo"></v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title v-html="item.fio"></v-list-tile-title>
-              <v-list-tile-sub-title v-html="'+' + item.phones[0]"></v-list-tile-sub-title>
+              <v-list-tile-title v-html="contact.fio"></v-list-tile-title>
+              <v-list-tile-sub-title v-html="contact.getFormattedMainPhoneNumber()"></v-list-tile-sub-title>
             </v-list-tile-content>
-            <v-list-tile-action-text v-if="item.isInGroup()">
-              <group-chip :group="item.group" :disabled="true"></group-chip>
+            <v-list-tile-action-text v-if="contact.isInGroup()">
+              <group-chip :group="contact.group" :disabled="true"></group-chip>
             </v-list-tile-action-text>
           </v-list-tile>
         </v-list>
@@ -26,12 +26,13 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Prop, Vue} from 'vue-property-decorator';
 import Contact from '../types/contact';
 import Groups from '../types/groups';
 import GroupsBar from './GroupsBar.vue';
 import GroupChip from './GroupChip.vue';
 import ContactCard from './ContactCard.vue';
+import Pages from '../types/pages';
 
 @Component({
   components: {
@@ -48,6 +49,10 @@ export default class ContactList extends Vue {
 
   private created(): void {
     this.$store.dispatch('FILL_CONTACTS_IN_DEFAULT');
+  }
+
+  private isSelectedPage(): boolean {
+    return this.$store.getters.SELECTED_PAGE === Pages.ContactList;
   }
 
   private showDialog(contact: Contact): void {
