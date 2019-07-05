@@ -24,7 +24,7 @@ export default class NavBar extends Vue {
   private items: Array<{ page: Pages, icon: string, text: string }> = [
     { page: Pages.ContactList, icon: 'contacts', text: 'Все контакты' },
     { page: Pages.BirthdayList, icon: 'event_note', text: 'Дни рождения'},
-    { page: Pages.Export, icon: 'import_contacts', text: 'Экспорт'},
+    { page: Pages.ImportExport, icon: 'import_contacts', text: 'Импорт / Экспорт'},
   ];
   // computed
   get drawerState(): boolean {

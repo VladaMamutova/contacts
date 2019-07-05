@@ -85,6 +85,55 @@ export default new Vuex.Store({
     SET_CURRENT_CONTACT_CLONE: (state, payload: Contact): void => {
       state.currentContactClone = payload;
     },
+    CLEAR_CONTACTS: (state): void => {
+      state.contacts = [];
+    },
+    // Сохранение списка контактов в localStorage.
+    LOAD_TO_LOCAL_STORAGE: (state): void => {
+      // Сериализуем список контактов.
+      for (let i = 0; i < state.contacts.length; i++) {
+        const serialObj = JSON.stringify(state.contacts[i]);
+        // Записываем его в хранилище по ключу "ContactsFindAll"
+        localStorage.setItem(i.toString(), serialObj);
+        // console.log(i.toString());
+        // console.log(serialObj);
+      }
+    },
+    // UPLOAD_FROM_LOCAL_STORAGE: (state): void => {
+      // for (let i = 0; i < localStorage.length; i++) {
+        // const key = localStorage.key(i);
+        // if (key !== null) {
+        // let v = JSON.parse(key);
+          // console.log(v);
+          // console.log(v.id);
+          // const contact = JSON.parse(key, function(key, value) {
+            // if (key === 'id') {
+              // return Number.parseInt(value, 10);
+            // }
+            // if (key === 'fio') {
+              // return value;
+            // }
+            // return value;
+          // });
+          // console.log(key);
+          // const item = JSON.parse(key);
+
+          // console.log(contact);
+          // console.log(contact.fio);
+          // const contact = JSON.parse(item);
+          // console.log(contact.id);
+          // const item = localStorage.getItem(key);
+          // if (item !== null) {
+            // console.log(item);
+            // const contact = JSON.parse(item);
+
+            // state.contacts.push(new Contact(contact.fio, contact.phones,
+              // group.key, contact.emails, contact.website,
+              // contact.birthday, contact.company, contact.photo, contact.id));
+          // }
+        // }
+      // }
+    // },
     // Мутации компонентов.
     SWITCH_DRAWER_STATE: (state): void => {
       state.drawerState = !state.drawerState;
@@ -168,6 +217,15 @@ export default new Vuex.Store({
       defaultContacts.forEach((element) => {
         context.commit('ADD_CONTACT', element);
       });
+    },
+    CLEAR_CONTACTS: async (context) => {
+      context.commit('CLEAR_CONTACTS');
+    },
+    LOAD_TO_LOCAL_STORAGE: async (context) => {
+      context.commit('LOAD_TO_LOCAL_STORAGE');
+    },
+    UPLOAD_FROM_LOCAL_STORAGE: async (context) => {
+      context.commit('UPLOAD_FROM_LOCAL_STORAGE');
     },
     // Действия для обновления свойств компонентов.
     SWITCH_DRAWER_STATE: async (context) => {

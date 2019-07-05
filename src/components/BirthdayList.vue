@@ -4,7 +4,7 @@
       <v-card>
         <v-list subheader>
           <v-subheader>Дни рождения</v-subheader>
-          <v-list-tile v-for="contact in contacts" :key="contact.fio" avatar v-show="contact.birthday">
+          <v-list-tile v-for="contact in contacts" :key="contact.id" avatar v-show="contact.birthday">
             <v-list-tile-avatar><img :src="contact.photo"></v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title v-html="contact.fio"></v-list-tile-title>
