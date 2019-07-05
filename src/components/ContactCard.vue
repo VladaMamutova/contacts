@@ -71,7 +71,7 @@
       </v-layout>
     </v-container>
     <v-card-actions>
-      <v-btn flat v-if="deleteAction" @click="deleteContact()">{{ deleteAction }}</v-btn>
+      <v-btn flat v-if="deleteAction" color="error" @click="deleteContact()">{{ deleteAction }}</v-btn>
       <v-spacer></v-spacer>
       <v-btn flat @click="performAction()">{{ action }}</v-btn>
       <v-btn flat color="primary" @click="closeDialog()">Закрыть</v-btn>
@@ -109,15 +109,13 @@ export default class ContactCard extends Vue {
   get contact(): Contact {
     const clone = this.$store.getters.CURRENT_CONTACT_CLONE;
 
-    if (!this.title) {
-      if (clone.IsEmpty()) {
-        this.title = 'Новый контакт';
-        this.action = 'Создать';
-      } else {
-        this.title = 'Просмотр контакта';
-        this.action = 'Изменить';
-        this.deleteAction = 'Удалить';
-      }
+    if (clone.id === -1) {
+      this.title = 'Новый контакт';
+      this.action = 'Создать';
+    } else {
+      this.title = 'Просмотр контакта';
+      this.action = 'Изменить';
+      this.deleteAction = 'Удалить';
     }
     if (clone.phones.length === 0) {
       clone.phones.push('');
@@ -171,12 +169,12 @@ export default class ContactCard extends Vue {
   }
 
   private performAction(): void {
-    if (this.action === 'Изменить') {
+    this.$store.dispatch('UPDATE_CONTACT', this.contact);
+    this.closeDialog();
+  }
 
-    } else if (this.action === 'Создать') {
-      this.$store.dispatch('ADD_CONTACT', this.contact);
-    }
-
+  private deleteContact(): void {
+    this.$store.dispatch('DELETE_CONTACT', this.contact);
     this.closeDialog();
   }
 

@@ -11,7 +11,7 @@ export default new Vuex.Store({
     drawerState: true, // Состояние выдвижного меню.
     selectedPage: Pages.ContactList, // Выбранная страница меню.
     contacts: [] as Contact[], // Список контактов.
-    currentContact: new Contact(), // Текущий контакт.
+    currentContactId: -1, // Id текущего просматриваемого контакта.
     currentContactClone: new Contact(), // Копия текущего контакта (редактируемая).
     groupToFilter: Groups.None, // Группа, по которой отфильтрован список контактов.
     dialogState: false, // Состояние диалогового окна карточки контакта.
@@ -26,8 +26,8 @@ export default new Vuex.Store({
     CONTACTS: (state) => {
       return state.contacts;
     },
-    CURRENT_CONTACT: (state) => {
-      return state.currentContact;
+    CURRENT_CONTACT_ID: (state) => {
+      return state.currentContactId;
     },
     CURRENT_CONTACT_CLONE: (state) => {
       return state.currentContactClone;
@@ -40,6 +40,52 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    // Мутации списка контактов.
+    ADD_CONTACT: (state, payload: Contact): void => {
+      let newId: number = -1;
+      let index: number = -1;
+       // Генерируем уникальный id контакта.
+      do {
+        newId = Math.floor(Math.random() * 50000);
+        index = state.contacts.findIndex((contact) => contact.id === newId);
+      }
+      while (index > -1);
+      // Изменяем id на сгенерированный и добавляем в список контактов.
+      payload.id = newId;
+      state.contacts.push(payload);
+    },
+    SET_CONTACT: (state, payload: Contact): void => {
+      const index = state.contacts.findIndex((contact) => contact.id === payload.id);
+      if (index > -1) {
+        state.contacts[index].set(payload);
+      }
+    },
+    DELETE_CONTACT: (state, payload: Contact): void => {
+      const index = state.contacts.findIndex((contact) => contact.id === payload.id);
+      if (index > -1) {
+        const newContactList = [];
+        for (let i = 0; i < state.contacts.length; i++) {
+          if (i !== index) {
+            newContactList.push(state.contacts[i]);
+          }
+        }
+        state.contacts = newContactList;
+      }
+    },
+    SET_CURRENT_CONTACT_ID: (state, payload: number): void => {
+      // Установка id текущего контакта и его клона при валидном id.
+      const index = state.contacts.findIndex((contact) => contact.id === payload);
+      state.currentContactId = payload;
+      if (index > -1) {
+        state.currentContactClone = state.contacts[index].clone();
+      } else {
+        state.currentContactClone = new Contact();
+      }
+    },
+    SET_CURRENT_CONTACT_CLONE: (state, payload: Contact): void => {
+      state.currentContactClone = payload;
+    },
+    // Мутации компонентов.
     SWITCH_DRAWER_STATE: (state): void => {
       state.drawerState = !state.drawerState;
     },
@@ -49,19 +95,6 @@ export default new Vuex.Store({
     SET_SELECTED_PAGE: (state, payload: Pages): void => {
       state.selectedPage = payload;
     },
-    SET_CONTACTS: (state, payload: Contact[]): void => {
-      state.contacts = payload;
-    },
-    ADD_CONTACT: (state, payload: Contact): void => {
-      state.contacts.push(payload);
-    },
-    SET_CURRENT_CONTACT: (state, payload: Contact): void => {
-      state.currentContact = payload;
-      state.currentContactClone = payload.clone();
-    },
-    SET_CURRENT_CONTACT_CLONE: (state, payload: Contact): void => {
-      state.currentContactClone = payload;
-    },
     SET_GROUP_TO_FILTER: (state, payload: Groups): void => {
       state.groupToFilter = payload;
     },
@@ -70,17 +103,9 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    SWITCH_DRAWER_STATE: async (context) => {
-      context.commit('SWITCH_DRAWER_STATE');
-    },
-    CLOSE_DRAWER: async (context) => {
-      context.commit('CLOSE_DRAWER');
-    },
-    SELECT_PAGE: async (context, payload: Pages) => {
-      context.commit('SET_SELECTED_PAGE', payload);
-    },
-    SELECT_CONTACT: async (context, payload: Contact) => {
-      context.commit('SET_CURRENT_CONTACT', payload);
+    // Действия со списком контактов.
+    SELECT_CONTACT_ID: async (context, payload: number) => {
+      context.commit('SET_CURRENT_CONTACT_ID', payload);
     },
     CLOSE_CURRENT_CONTACT: async (context) => {
       context.commit('SET_CURRENT_CONTACT', new Contact());
@@ -88,20 +113,25 @@ export default new Vuex.Store({
     UPDATE_CURRENT_CONTACT_CLONE: async (context, payload: Contact) => {
       context.commit('SET_CURRENT_CONTACT_CLONE', payload);
     },
-    CHANGE_GROUP_TO_FILTER: async (context, payload: Groups) => {
-      context.commit('SET_GROUP_TO_FILTER', payload);
-    },
-    SHOW_DIALOG: async (context) => {
-      context.commit('SET_DIALOG_STATE', true);
-    },
-    CLOSE_DIALOG: async (context) => {
-      context.commit('SET_DIALOG_STATE', false);
-    },
-    ADD_CONTACT: async (context, payload: Contact) => {
-      context.commit('ADD_CONTACT', payload);
+    UPDATE_CONTACT: async (context, payload: Contact) => {
+      // Действие обновления контакта: если идентификатор контакта не задан,
+      // значит будет создан новый контакт, если же id задан
+      // и служит идентификатором для какой-то записи,
+      // то будет обновлён существующий контакт.
+      if (payload !== null && payload !== undefined) {
+        if (payload.id !== -1) {
+          context.commit('SET_CONTACT', payload);
+        } else {
+          context.commit('ADD_CONTACT', payload);
+        }
+      }
     },
     DELETE_CONTACT: async (context, payload: Contact) => {
-      context.commit('DELETE_CONTACT', payload);
+      if (payload !== null && payload !== undefined) {
+        if (payload.id !== -1) {
+          context.commit('DELETE_CONTACT', payload);
+        }
+      }
     },
     FILL_CONTACTS_IN_DEFAULT: async (context) => {
       const defaultContacts: Contact[] = [
@@ -135,7 +165,28 @@ export default new Vuex.Store({
         new Contact('Морозов Кирилл Константинович', ['380710099876']),
         new Contact('Иванченко Юрий Сергеевич', ['380716543111'], Groups.Сolleagues),
       ];
-      context.commit('SET_CONTACTS', defaultContacts);
+      defaultContacts.forEach((element) => {
+        context.commit('ADD_CONTACT', element);
+      });
+    },
+    // Действия для обновления свойств компонентов.
+    SWITCH_DRAWER_STATE: async (context) => {
+      context.commit('SWITCH_DRAWER_STATE');
+    },
+    CLOSE_DRAWER: async (context) => {
+      context.commit('CLOSE_DRAWER');
+    },
+    SELECT_PAGE: async (context, payload: Pages) => {
+      context.commit('SET_SELECTED_PAGE', payload);
+    },
+    SHOW_DIALOG: async (context) => {
+      context.commit('SET_DIALOG_STATE', true);
+    },
+    CLOSE_DIALOG: async (context) => {
+      context.commit('SET_DIALOG_STATE', false);
+    },
+    CHANGE_GROUP_TO_FILTER: async (context, payload: Groups) => {
+      context.commit('SET_GROUP_TO_FILTER', payload);
     },
   },
 });

@@ -3,6 +3,7 @@ import { Groups } from './groups';
 
 
 export default class Contact {
+    public id: number;
     public fio: string;
     public phones: string[];
     public emails: string[];
@@ -21,7 +22,9 @@ export default class Contact {
         birthday: string = '',
         company: string = '',
         photo: string = '//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png',
+        id: number = -1,
         ) {
+        this.id = id;
         this.fio = fio;
         this.phones = phones;
         this.group = new Group(groupKey);
@@ -64,6 +67,7 @@ export default class Contact {
 
     public clone(): Contact {
         const clone = new Contact();
+        clone.id = this.id;
         clone.fio = this.fio;
         clone.phones = [];
         this.phones.forEach((phone) => {
@@ -80,7 +84,24 @@ export default class Contact {
         clone.photo = this.photo;
         return clone;
     }
-
+    public set(contact: Contact): void {
+        this.id = contact.id;
+        this.fio = contact.fio;
+        this.phones = [];
+        contact.phones.forEach((phone) => {
+            this.phones.push(phone);
+        });
+        this.group = new Group(contact.group.key);
+        this.emails = [];
+        contact.emails.forEach((email) => {
+            this.emails.push(email);
+        });
+        this.website = contact.website;
+        this.birthday = contact.birthday;
+        this.company = contact.company;
+        this.photo = contact.photo;
+    }
+/// id!!!!!
     public IsEmpty(): boolean {
         if (!this.fio && !this.website && !this.birthday && !this.company &&
             this.phones.length === 0 && this.emails.length === 0) {
@@ -88,7 +109,7 @@ export default class Contact {
         }
         return false;
     }
-
+/// id!!!!!
     public IsReadyToSave() {
         return this.fio || this.phones.length > 0;
     }

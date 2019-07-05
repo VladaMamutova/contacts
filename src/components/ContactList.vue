@@ -5,7 +5,7 @@
         <v-list subheader>
           <v-subheader>Все контакты</v-subheader>
           <groups-bar />
-          <v-list-tile v-for="contact in contacts" :key="contact.fio" avatar @click="showDialog(contact)">
+          <v-list-tile v-for="contact in contacts" :key="contact.id" avatar @click="showDialog(contact.id)">
             <v-list-tile-avatar><img :src="contact.photo"></v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title v-html="contact.fio"></v-list-tile-title>
@@ -55,11 +55,8 @@ export default class ContactList extends Vue {
     return this.$store.getters.SELECTED_PAGE === Pages.ContactList;
   }
 
-  private showDialog(contact: Contact): void {
-    if (contact === null || contact === undefined) {
-      contact = new Contact();
-    }
-    this.$store.dispatch('SELECT_CONTACT', contact);
+  private showDialog(contactId: number = -1): void {
+    this.$store.dispatch('SELECT_CONTACT_ID', contactId);
     this.$store.dispatch('SHOW_DIALOG');
   }
 
