@@ -1,75 +1,93 @@
 <template>
-    <v-dialog v-model="dialogState" width="800px">
-      <v-card>
-    <v-card-title class="grey lighten-4 py-4 title">{{ title }}</v-card-title>
-    <v-container grid-list-sm class="pa-4">
-      <v-layout row wrap>
-        <v-flex xs12 align-center justify-space-between>
-          <v-layout align-center>
-            <v-avatar size="40px" class="mr-3">
-              <img :src="contact.photo"
-                alt="Фото контакта">
-            </v-avatar>
-            <v-text-field placeholder="ФИО контакта" v-model="contact.fio"
-            :input="updateContact()"></v-text-field>
-          </v-layout>
+  <v-dialog v-model="dialogState" width="800px">
+    <v-card>
+      <v-card-title class="grey lighten-4 py-4 title">{{ title }}</v-card-title>
+      <v-container grid-list-sm class="pa-4">
+        <v-layout row wrap>
+          <v-flex xs12 align-center justify-space-between>
+            <v-layout align-center>
+              <v-avatar size="40px" class="mr-3">
+                <img :src="contact.photo"
+                  alt="Фото контакта">
+              </v-avatar>
+              <v-text-field label="ФИО" v-model="contact.fio"
+              :input="updateContact()"></v-text-field>
+            </v-layout>
+          </v-flex>
+          <v-container fluid class="padding-0">
+            <v-layout row class="label">
+             <v-flex>
+               <v-card-text class="px-0">Телефон</v-card-text>
+            </v-flex>
+             <v-flex xs1>
+                <v-btn flat icon color="primary" @click="addPhoneField()">
+                  <v-icon>add</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+            <v-layout class="padding-0 narrow-row" row v-for="(phone, index) in contact.phones" :key="index">
+                <v-text-field auto-grow class="padding-0" :hide-details="true"
+                  v-model="contact.phones[index]"
+                  :input="updateContact()"
+                  type="tel" prepend-icon="phone"
+                  placeholder="__ (___) ___ __ __"
+                  prefix="+" mask="## (###) ### ## ##"
+                ></v-text-field>
+              <v-flex xs1 class="bottom">
+                <v-btn flat icon color="primary" @click="deletePhoneField(index)">
+                  <v-icon>remove</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-container>
+          <v-container fluid class="padding-0 bottom">
+            <v-layout row class="label">
+             <v-flex class="padding-0">
+               <v-card-text class="px-0">Email</v-card-text>
+            </v-flex>
+             <v-flex xs1>
+                <v-btn flat icon color="primary" @click="addEmailField()">
+                  <v-icon>add</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+            <v-layout class="medium-row" row v-for="(email, index) in contact.emails" :key="index">
+              <v-flex grow>
+                <v-text-field
+                prepend-inner-icon="mail" class="padding-0"
+                placeholder="Например, ivanpetrov@gmail.com"
+                v-model="contact.emails[index]"
+                :input="updateEmail(email, index)"
+                :error-messages="emailErrorMessages[index]" 
+                @blur="validateEmails()"/>
+              </v-flex>
+              <v-flex xs1 class="bottom">
+                <v-btn flat icon color="primary" @click="deleteEmailField(index)">
+                  <v-icon>remove</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        <v-flex xs4>
+        <v-menu ref="menu" v-model="menu" :close-on-content-click="false"
+         :nudge-right="40" lazy transition="scale-transition"
+          offset-y full-width max-width="290px" min-width="290px">
+          <template v-slot:activator="{ on }">
+            <v-text-field v-model="dateFormatted" label="Дата рождения"
+              persistent-hint prepend-icon="event"
+              @blur="date = parseDate(dateFormatted)" readonly v-on="on"/>
+          </template>
+          <v-date-picker v-model="contact.birthday" locale="ru" no-title
+          @input="menu = false"></v-date-picker>
+          </v-menu>
         </v-flex>
-        <v-container fluid class="unpadding">
-          <v-layout row v-for="(phone, index) in contact.phones" :key="index">
-            <v-flex grow>
-              <v-text-field
-                v-model="contact.phones[index]"
-                :input="updatePhoneTextField(phone, index)"
-                type="tel" prepend-icon="phone"
-                placeholder="__ (___) ___ __ __"
-                prefix="+" mask="## (###) ### ## ##"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs1 class="bottom" v-if="phone">
-              <v-btn flat icon color="primary" @click="updatePhoneTextField('', index)">
-                <v-icon>remove</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-container>
-        <v-container fluid class="unpadding">
-          <v-layout row v-for="(email, index) in contact.emails" :key="index">
-            <v-flex grow>
-              <v-text-field
-              prepend-inner-icon="mail"
-              placeholder="Email"
-              v-model="contact.emails[index]"
-              :input="updateEmailTextField(email, index)"
-              :error-messages="emailErrorMessages[index]" 
-              @blur="validateEmails()"/>
-            </v-flex>
-            <v-flex xs1 class="bottom" v-if="email">
-              <v-btn flat icon color="primary" @click="updateEmailTextField('', index)">
-                <v-icon>remove</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-container>
-       <v-flex xs4>
-      <v-menu ref="menu" v-model="menu" :close-on-content-click="false"
-        :nudge-right="40" lazy transition="scale-transition"
-        offset-y full-width max-width="290px" min-width="290px">
-        <template v-slot:activator="{ on }">
-          <v-text-field v-model="dateFormatted" label="Дата рождения"
-            persistent-hint prepend-icon="event"
-            @blur="date = parseDate(dateFormatted)" readonly v-on="on"/>
-        </template>
-        <v-date-picker v-model="contact.birthday" locale="ru" no-title
-        @input="menu = false"></v-date-picker>
-        </v-menu>
-    </v-flex>
-         <v-flex xs8>
-          <v-text-field prepend-inner-icon="business" placeholder="Компания"
-          v-model="contact.company" :input="updateContact()"></v-text-field>
-        </v-flex>
+        <v-flex xs8>
+          <v-text-field prepend-inner-icon="business" label="Компания"
+            v-model="contact.company" :input="updateContact()"></v-text-field>
+          </v-flex>
         <v-flex xs12>
-          <v-text-field prepend-inner-icon="language" placeholder="Веб-сайт"
-          v-model="contact.website" :input="updateContact()"></v-text-field>
+          <v-text-field prepend-inner-icon="language" label="Веб-сайт"
+            v-model="contact.website" :input="updateContact()"></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
@@ -79,8 +97,8 @@
       <v-btn flat @click="performAction()">{{ action }}</v-btn>
       <v-btn flat color="primary" @click="closeDialog()">Закрыть</v-btn>
     </v-card-actions>
-  </v-card>
-</v-dialog>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
@@ -138,22 +156,27 @@ export default class ContactCard extends Vue {
     this.$store.dispatch('UPDATE_CURRENT_CONTACT_CLONE', this.contact);
   }
 
-  private updatePhoneTextField(updatedPhone: string, index: number): void {
-    if (!updatedPhone && index !== this.contact.phones.length - 1) {
-      this.contact.phones.splice(index, 1);
-    }
-    if (updatedPhone && index === this.contact.phones.length - 1) {
-      this.contact.phones.push('');
-    }
-    this.updateContact();
+  private addPhoneField(index: number): void {
+    this.contact.phones.push('');
   }
 
-  private updateEmailTextField(updatedEmail: string, index: number): void {
-    if (!updatedEmail && index !== this.contact.emails.length - 1) {
-      this.contact.emails.splice(index, 1);
-    }
-    if (updatedEmail && index === this.contact.emails.length - 1) {
-      this.contact.emails.push('');
+  private deletePhoneField(index: number): void {
+    this.contact.phones.splice(index, 1);
+  }
+
+  private addEmailField(index: number): void {
+    this.contact.emails.push('');
+  }
+
+  private deleteEmailField(index: number): void {
+    this.contact.emails.splice(index, 1);
+  }
+
+  private updateEmail(updatedEmail: string, index: number) {
+    if (updatedEmail) {
+      this.emailErrorMessages[index] = this.validateEmail(updatedEmail);
+    } else {
+      this.emailErrorMessages[index] = '';
     }
     this.updateContact();
   }
@@ -178,6 +201,10 @@ export default class ContactCard extends Vue {
   }
 
   private performAction(): void {
+    let array = this.contact.phones.filter((item: string) => item);
+    this.contact.phones = array;
+    array = this.contact.emails.filter((item: string) => item);
+    this.contact.emails = array;
     this.$store.dispatch('UPDATE_CONTACT', this.contact);
     this.closeDialog();
   }
@@ -191,6 +218,7 @@ export default class ContactCard extends Vue {
     this.title = '';
     this.action = '';
     this.deleteAction = '';
+    this.emailErrorMessages = [];
     this.$store.dispatch('CLOSE_DIALOG');
   }
 
@@ -226,11 +254,26 @@ export default class ContactCard extends Vue {
 </script>
 
 <style scoped>
-.unpadding {
+
+.padding-0 {
   padding: 0px;
 }
+
 .bottom {
   margin: auto auto 12px auto;
 }
+
+.label {
+  height: 44px;
+}
+
+.narrow-row {
+  height: 50px;
+}
+
+.medium-row {
+  height: 60px;
+}
+
 </style>
 
