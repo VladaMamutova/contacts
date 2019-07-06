@@ -5,7 +5,7 @@
       <nav-bar />
       <contact-list />
       <birthday-list />
-      <import-export-bar />
+      <settings />
     </v-content>
   </v-app>
 </template>
@@ -15,7 +15,7 @@ import AppHeader from './components/AppHeader';
 import NavBar from './components/NavBar';
 import ContactList from './components/ContactList';
 import BirthdayList from './components/BirthdayList';
-import ImportExportBar from './components/ImportExportBar';
+import Settings from './components/Settings';
 
 export default {
   name: 'App',
@@ -24,7 +24,7 @@ export default {
     NavBar,
     ContactList,
     BirthdayList,
-    ImportExportBar,
+    Settings,
   },
   data() {
     return {

@@ -35,6 +35,19 @@ export default class Contact {
         this.photo = photo;
     }
 
+    public setFromJSONObject(obj: any): void {
+        const group = obj.group;
+        this.id = obj.id;
+        this.fio = obj.fio || '';
+        this.phones = obj.phones || [];
+        this.group = new Group(group.key);
+        this.emails = obj.emails || [];
+        this.website = obj.website;
+        this.company = obj.company;
+        this.birthday = obj.birthday;
+        this.photo = obj.photo;
+    }
+
     public isInGroup(): boolean {
         return this.group.key !== Groups.None;
     }

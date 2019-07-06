@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import Contact from './types/contact';
 import Groups from './types/groups';
 import Pages from './types/pages';
+import Group from './types/group';
 
 Vue.use(Vuex);
 
@@ -24,6 +25,21 @@ export default new Vuex.Store({
       return state.selectedPage;
     },
     CONTACTS: (state) => {
+      const item = localStorage.getItem('contacts');
+      if (item) {
+        const contactArray: Contact[] = [];
+        try {
+          const objArray = JSON.parse(item);
+          objArray.forEach((obj: any) => {
+            const parsedContact = new Contact();
+            parsedContact.setFromJSONObject(obj);
+            contactArray.push(parsedContact);
+          });
+          state.contacts = contactArray;
+        } catch (e) {
+          localStorage.removeItem('contacts');
+        }
+      }
       return state.contacts;
     },
     CURRENT_CONTACT_ID: (state) => {
@@ -90,50 +106,9 @@ export default new Vuex.Store({
     },
     // Сохранение списка контактов в localStorage.
     LOAD_TO_LOCAL_STORAGE: (state): void => {
-      // Сериализуем список контактов.
-      for (let i = 0; i < state.contacts.length; i++) {
-        const serialObj = JSON.stringify(state.contacts[i]);
-        // Записываем его в хранилище по ключу "ContactsFindAll"
-        localStorage.setItem(i.toString(), serialObj);
-        // console.log(i.toString());
-        // console.log(serialObj);
-      }
+      const parsed = JSON.stringify(state.contacts);
+      localStorage.setItem('contacts', parsed);
     },
-    // UPLOAD_FROM_LOCAL_STORAGE: (state): void => {
-      // for (let i = 0; i < localStorage.length; i++) {
-        // const key = localStorage.key(i);
-        // if (key !== null) {
-        // let v = JSON.parse(key);
-          // console.log(v);
-          // console.log(v.id);
-          // const contact = JSON.parse(key, function(key, value) {
-            // if (key === 'id') {
-              // return Number.parseInt(value, 10);
-            // }
-            // if (key === 'fio') {
-              // return value;
-            // }
-            // return value;
-          // });
-          // console.log(key);
-          // const item = JSON.parse(key);
-
-          // console.log(contact);
-          // console.log(contact.fio);
-          // const contact = JSON.parse(item);
-          // console.log(contact.id);
-          // const item = localStorage.getItem(key);
-          // if (item !== null) {
-            // console.log(item);
-            // const contact = JSON.parse(item);
-
-            // state.contacts.push(new Contact(contact.fio, contact.phones,
-              // group.key, contact.emails, contact.website,
-              // contact.birthday, contact.company, contact.photo, contact.id));
-          // }
-        // }
-      // }
-    // },
     // Мутации компонентов.
     SWITCH_DRAWER_STATE: (state): void => {
       state.drawerState = !state.drawerState;
@@ -173,16 +148,19 @@ export default new Vuex.Store({
         } else {
           context.commit('ADD_CONTACT', payload);
         }
+        context.commit('LOAD_TO_LOCAL_STORAGE');
       }
     },
     DELETE_CONTACT: async (context, payload: Contact) => {
       if (payload !== null && payload !== undefined) {
         if (payload.id !== -1) {
           context.commit('DELETE_CONTACT', payload);
+          context.commit('LOAD_TO_LOCAL_STORAGE');
         }
       }
     },
     FILL_CONTACTS_IN_DEFAULT: async (context) => {
+      context.commit('CLEAR_CONTACTS');
       const defaultContacts: Contact[] = [
         new Contact('Сестричка', ['380713333333', '380714445577'], Groups.Family,
         ['likamamutova@gmail.com', 'likamamutova@yandex.ru'], 'https:\\\\vk.com\\likamamutova', '2000-07-11',
@@ -217,15 +195,14 @@ export default new Vuex.Store({
       defaultContacts.forEach((element) => {
         context.commit('ADD_CONTACT', element);
       });
+      context.commit('LOAD_TO_LOCAL_STORAGE');
     },
     CLEAR_CONTACTS: async (context) => {
       context.commit('CLEAR_CONTACTS');
+      context.commit('LOAD_TO_LOCAL_STORAGE');
     },
     LOAD_TO_LOCAL_STORAGE: async (context) => {
       context.commit('LOAD_TO_LOCAL_STORAGE');
-    },
-    UPLOAD_FROM_LOCAL_STORAGE: async (context) => {
-      context.commit('UPLOAD_FROM_LOCAL_STORAGE');
     },
     // Действия для обновления свойств компонентов.
     SWITCH_DRAWER_STATE: async (context) => {

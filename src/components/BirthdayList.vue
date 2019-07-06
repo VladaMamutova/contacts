@@ -4,7 +4,7 @@
       <v-card>
         <v-list subheader>
           <v-subheader>Дни рождения</v-subheader>
-          <v-list-tile v-for="contact in contacts" :key="contact.id" avatar v-show="contact.birthday">
+          <v-list-tile v-for="contact in contacts" :key="contact.id" avatar>
             <v-list-tile-avatar><img :src="contact.photo"></v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title v-html="contact.fio"></v-list-tile-title>
@@ -31,7 +31,12 @@ export default class BirthdayList extends Vue {
   }
 
   get contacts(): Contact[] {
-    return this.sortByBirthday(this.$store.getters.CONTACTS.filter((contact: Contact) => contact.birthday));
+    // Копируем массив контактов, чтобы фильтрация
+    // и сортировка не изменяли источник.
+    let contacts: Contact[] = this.$store.getters.CONTACTS.slice(0);
+    contacts = contacts.filter((contact: Contact) => contact.birthday);
+    contacts = this.sortByBirthday(contacts);
+    return contacts;
   }
 
   private sortByBirthday(contacts: Contact[]): Contact[] {

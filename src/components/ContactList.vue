@@ -44,11 +44,10 @@ import Pages from '../types/pages';
 
 export default class ContactList extends Vue {
   get contacts(): Contact[] {
-    return this.sortByName(this.filterByGroup(this.$store.getters.CONTACTS, this.groupToFilter));
-  }
-
-  private created(): void {
-    this.$store.dispatch('FILL_CONTACTS_IN_DEFAULT');
+    // Копируем массив контактов, чтобы фильтрация
+    // и сортировка не изменяли источник.
+    const contacts = this.$store.getters.CONTACTS.slice(0);
+    return this.sortByName(this.filterByGroup(contacts, this.groupToFilter));
   }
 
   private isSelectedPage(): boolean {
