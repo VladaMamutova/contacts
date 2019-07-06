@@ -10,7 +10,8 @@
               <img :src="contact.photo"
                 alt="Фото контакта">
             </v-avatar>
-            <v-text-field placeholder="ФИО контакта" v-model="contact.fio"></v-text-field>
+            <v-text-field placeholder="ФИО контакта" v-model="contact.fio"
+            :input="updateContact()"></v-text-field>
           </v-layout>
         </v-flex>
         <v-container fluid class="unpadding">
@@ -63,10 +64,12 @@
         </v-menu>
     </v-flex>
          <v-flex xs8>
-          <v-text-field prepend-inner-icon="business" placeholder="Компания" v-model="contact.company"></v-text-field>
+          <v-text-field prepend-inner-icon="business" placeholder="Компания"
+          v-model="contact.company" :input="updateContact()"></v-text-field>
         </v-flex>
         <v-flex xs12>
-          <v-text-field prepend-inner-icon="language" placeholder="Веб-сайт" v-model="contact.website"></v-text-field>
+          <v-text-field prepend-inner-icon="language" placeholder="Веб-сайт"
+          v-model="contact.website" :input="updateContact()"></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
@@ -131,6 +134,10 @@ export default class ContactCard extends Vue {
     this.$store.dispatch('UPDATE_CURRENT_CONTACT_CLONE', value);
   }
 
+  private updateContact() {
+    this.$store.dispatch('UPDATE_CURRENT_CONTACT_CLONE', this.contact);
+  }
+
   private updatePhoneTextField(updatedPhone: string, index: number): void {
     if (!updatedPhone && index !== this.contact.phones.length - 1) {
       this.contact.phones.splice(index, 1);
@@ -138,6 +145,7 @@ export default class ContactCard extends Vue {
     if (updatedPhone && index === this.contact.phones.length - 1) {
       this.contact.phones.push('');
     }
+    this.updateContact();
   }
 
   private updateEmailTextField(updatedEmail: string, index: number): void {
@@ -147,6 +155,7 @@ export default class ContactCard extends Vue {
     if (updatedEmail && index === this.contact.emails.length - 1) {
       this.contact.emails.push('');
     }
+    this.updateContact();
   }
 
   private validateEmails(): void {
@@ -211,6 +220,7 @@ export default class ContactCard extends Vue {
     } else {
       this.contact.birthday = date;
     }
+    this.updateContact();
   }
 }
 </script>

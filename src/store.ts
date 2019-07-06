@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import Contact from './types/contact';
 import Groups from './types/groups';
 import Pages from './types/pages';
-import Group from './types/group';
 
 Vue.use(Vuex);
 
@@ -19,9 +18,17 @@ export default new Vuex.Store({
   },
   getters : {
     DRAWER_STATE: (state) => {
+      const item = localStorage.drawerState;
+      if (item) {
+        state.drawerState = item === 'true' ? true : false;
+      }
       return state.drawerState;
     },
     SELECTED_PAGE: (state) => {
+      const item = localStorage.selectedPage;
+      if (item) {
+        state.selectedPage = Number.parseInt(item, 10);
+      }
       return state.selectedPage;
     },
     CONTACTS: (state) => {
@@ -43,15 +50,38 @@ export default new Vuex.Store({
       return state.contacts;
     },
     CURRENT_CONTACT_ID: (state) => {
+      const item = localStorage.currentContactId;
+      if (item) {
+        state.currentContactId = Number.parseInt(item, 10);
+      }
       return state.currentContactId;
     },
     CURRENT_CONTACT_CLONE: (state) => {
+      const item = localStorage.getItem('currentContactClone');
+      if (item) {
+        try {
+          const obj = JSON.parse(item);
+          const parsedContact = new Contact();
+          parsedContact.setFromJSONObject(obj);
+          state.currentContactClone = parsedContact;
+        } catch (e) {
+          localStorage.removeItem('contacts');
+        }
+      }
       return state.currentContactClone;
     },
     GROUP_TO_FILTER: (state) => {
+      const item = localStorage.groupToFilter;
+      if (item) {
+        state.groupToFilter = Number.parseInt(item, 10);
+      }
       return state.groupToFilter;
     },
     DIALOG_STATE: (state) => {
+      const item = localStorage.dialogState;
+      if (item) {
+        state.dialogState = item === 'true' ? true : false;
+      }
       return state.dialogState;
     },
   },
@@ -97,9 +127,14 @@ export default new Vuex.Store({
       } else {
         state.currentContactClone = new Contact();
       }
+      localStorage.currentContactId = state.currentContactId;
+      const parsed = JSON.stringify(state.currentContactClone);
+      localStorage.setItem('currentContactClone', parsed);
     },
     SET_CURRENT_CONTACT_CLONE: (state, payload: Contact): void => {
       state.currentContactClone = payload;
+      const parsed = JSON.stringify(state.currentContactClone);
+      localStorage.setItem('currentContactClone', parsed);
     },
     CLEAR_CONTACTS: (state): void => {
       state.contacts = [];
@@ -112,18 +147,23 @@ export default new Vuex.Store({
     // Мутации компонентов.
     SWITCH_DRAWER_STATE: (state): void => {
       state.drawerState = !state.drawerState;
+      localStorage.drawerState = state.drawerState;
     },
     CLOSE_DRAWER: (state): void => {
       state.drawerState = false;
+      localStorage.drawerState = state.drawerState;
     },
     SET_SELECTED_PAGE: (state, payload: Pages): void => {
       state.selectedPage = payload;
+      localStorage.selectedPage = state.selectedPage;
     },
     SET_GROUP_TO_FILTER: (state, payload: Groups): void => {
       state.groupToFilter = payload;
+      localStorage.groupToFilter = state.groupToFilter;
     },
     SET_DIALOG_STATE: (state, payload: boolean ): void => {
       state.dialogState = payload;
+      localStorage.dialogState = state.dialogState;
     },
   },
   actions: {
