@@ -4,7 +4,7 @@
       <v-card>
         <v-list subheader>
           <v-subheader>Дни рождения</v-subheader>
-          <v-list-tile v-for="contact in contacts" :key="contact.id" avatar>
+          <v-list-tile v-for="contact in contacts" :key="contact.id" avatar @click="showDialog(contact.id)">
             <v-list-tile-avatar><img :src="contact.photo"></v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title v-html="contact.fio"></v-list-tile-title>
@@ -14,16 +14,22 @@
         </v-list>
       </v-card>
     </v-flex>
+    <contact-card />
   </v-layout>
 </template>
 
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
+import ContactCard from './ContactCard.vue';
 import Contact from '../types/contact';
 import Groups from '../types/groups';
 import Pages from '../types/pages';
 
-@Component({})
+@Component({
+   components: {
+    ContactCard,
+   },
+})
 
 export default class BirthdayList extends Vue {
   private isSelectedPage(): boolean {
@@ -37,6 +43,11 @@ export default class BirthdayList extends Vue {
     contacts = contacts.filter((contact: Contact) => contact.birthday);
     contacts = this.sortByBirthday(contacts);
     return contacts;
+  }
+
+  private showDialog(contactId: number = -1): void {
+    this.$store.dispatch('SELECT_CONTACT_ID', contactId);
+    this.$store.dispatch('SHOW_DIALOG');
   }
 
   private sortByBirthday(contacts: Contact[]): Contact[] {
