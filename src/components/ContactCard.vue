@@ -6,10 +6,14 @@
         <v-layout row wrap>
           <v-flex xs12 align-center justify-space-between>
             <v-layout align-center>
-              <v-avatar size="40px" class="mr-3">
-                <img :src="contact.photo"
-                  alt="Фото контакта">
-              </v-avatar>
+              <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-avatar size="40px" class="mr-3" v-on="on">
+                <img :src="contact.photo" alt="Фото контакта">
+                </v-avatar>
+              </template>
+              <span>Нажмите, чтобы просмотреть или загрузить фото</span>
+              </v-tooltip>
               <v-text-field label="ФИО" v-model="contact.fio"
               :input="updateContact()"></v-text-field>
             </v-layout>
@@ -98,6 +102,22 @@
       <v-btn flat color="primary" @click="closeDialog()">Закрыть</v-btn>
     </v-card-actions>
     </v-card>
+    <v-dialog v-model="photoDialog" width="300px">
+    <v-card>
+      <v-card-title class="grey lighten-4 py-3 title">Фото контакта</v-card-title>
+      <v-container>
+        <v-flex>
+          <v-card>
+            <v-img
+              src="https://picsum.photos/350/165?random"
+              height="125"
+              class="grey darken-4"
+            ></v-img>
+          </v-card>
+        </v-flex>
+      </v-container>
+    </v-card>
+   </v-dialog>
   </v-dialog>
 </template>
 
@@ -116,6 +136,7 @@ export default class ContactCard extends Vue {
   private emailErrorMessages: string[] = [];
 
   private menu: boolean = false;
+  private photoDialog: boolean = false;
 
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;

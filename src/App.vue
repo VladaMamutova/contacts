@@ -6,6 +6,7 @@
       <contact-list />
       <birthday-list />
       <settings />
+      <contact-card />
     </v-content>
   </v-app>
 </template>
@@ -16,6 +17,7 @@ import NavBar from './components/NavBar';
 import ContactList from './components/ContactList';
 import BirthdayList from './components/BirthdayList';
 import Settings from './components/Settings';
+import ContactCard from './components/ContactCard';
 
 export default {
   name: 'App',
@@ -25,6 +27,7 @@ export default {
     ContactList,
     BirthdayList,
     Settings,
+    ContactCard,
   },
   data() {
     return {

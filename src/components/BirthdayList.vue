@@ -14,22 +14,16 @@
         </v-list>
       </v-card>
     </v-flex>
-    <contact-card />
   </v-layout>
 </template>
 
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
-import ContactCard from './ContactCard.vue';
 import Contact from '../types/contact';
 import Groups from '../types/groups';
 import Pages from '../types/pages';
 
-@Component({
-   components: {
-    ContactCard,
-   },
-})
+@Component({})
 
 export default class BirthdayList extends Vue {
   private isSelectedPage(): boolean {

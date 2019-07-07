@@ -21,7 +21,6 @@
     <v-btn fab bottom right color="primary" dark fixed @click="showDialog()">
       <v-icon>add</v-icon>
     </v-btn>
-    <contact-card></contact-card>
   </v-layout>
 </template>
 
@@ -31,14 +30,12 @@ import Contact from '../types/contact';
 import Groups from '../types/groups';
 import GroupsBar from './GroupsBar.vue';
 import GroupChip from './GroupChip.vue';
-import ContactCard from './ContactCard.vue';
 import Pages from '../types/pages';
 
 @Component({
   components: {
     GroupsBar,
     GroupChip,
-    ContactCard,
   },
 })
 

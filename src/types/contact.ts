@@ -114,7 +114,6 @@ export default class Contact {
         this.company = contact.company;
         this.photo = contact.photo;
     }
-/// id!!!!!
     public IsEmpty(): boolean {
         if (!this.fio && !this.website && !this.birthday && !this.company &&
             this.phones.length === 0 && this.emails.length === 0) {
@@ -122,7 +121,6 @@ export default class Contact {
         }
         return false;
     }
-/// id!!!!!
     public IsReadyToSave() {
         return this.fio || this.phones.length > 0;
     }

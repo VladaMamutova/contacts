@@ -39,19 +39,19 @@ export default class Group {
         let color: string = '';
         switch (this.key) {
             case Groups.Family: {
-                color = '#EC407A'; // pink darken-1
+                color = 'pink lighten-1';
                 break;
             }
             case Groups.Friends: {
-                color = '#FFAB00'; // amber accent-4
+                color = 'amber accent-4';
                 break;
             }
             case Groups.Сolleagues: {
-                color = '#64DD17'; // light-green accent-4
+                color = '#60cc11'; // ~ light-green accent-4
                 break;
             }
             default: {
-                color = '#0091EA'; // light-blue accent-4
+                color = 'light-blue accent-4';
                 break;
             }
         }
