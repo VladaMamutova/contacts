@@ -13,8 +13,10 @@ export default new Vuex.Store({
     contacts: [] as Contact[], // Список контактов.
     currentContactId: -1, // Id текущего просматриваемого контакта.
     currentContactClone: new Contact(), // Копия текущего контакта (редактируемая).
+    currentPhoto: '', // Текущая выбранная фотография контакта.
     groupToFilter: Groups.None, // Группа, по которой отфильтрован список контактов.
     dialogState: false, // Состояние диалогового окна карточки контакта.
+    photoDialogState: false, // Состояние диалогового окна фотографии контакта.
   },
   getters : {
     DRAWER_STATE: (state) => {
@@ -70,6 +72,13 @@ export default new Vuex.Store({
       }
       return state.currentContactClone;
     },
+    CURRENT_PHOTO: (state) => {
+      const item = localStorage.currentPhoto;
+      if (item) {
+        state.currentPhoto = item;
+      }
+      return state.currentPhoto;
+    },
     GROUP_TO_FILTER: (state) => {
       const item = localStorage.groupToFilter;
       if (item) {
@@ -83,6 +92,13 @@ export default new Vuex.Store({
         state.dialogState = item === 'true' ? true : false;
       }
       return state.dialogState;
+    },
+    PHOTO_DIALOG_STATE: (state) => {
+      const item = localStorage.photoDialogState;
+      if (item) {
+        state.photoDialogState = item === 'true' ? true : false;
+      }
+      return state.photoDialogState;
     },
   },
   mutations: {
@@ -136,6 +152,10 @@ export default new Vuex.Store({
       const parsed = JSON.stringify(state.currentContactClone);
       localStorage.setItem('currentContactClone', parsed);
     },
+    SET_CURRENT_PHOTO: (state, payload: string): void => {
+      state.currentPhoto = payload;
+      localStorage.currentPhoto = state.currentPhoto;
+    },
     CLEAR_CONTACTS: (state): void => {
       state.contacts = [];
     },
@@ -165,6 +185,10 @@ export default new Vuex.Store({
       state.dialogState = payload;
       localStorage.dialogState = state.dialogState;
     },
+    SET_PHOTO_DIALOG_STATE: (state, payload: boolean ): void => {
+      state.photoDialogState = payload;
+      localStorage.photoDialogState = state.photoDialogState;
+    },
   },
   actions: {
     // Действия со списком контактов.
@@ -176,6 +200,9 @@ export default new Vuex.Store({
     },
     UPDATE_CURRENT_CONTACT_CLONE: async (context, payload: Contact) => {
       context.commit('SET_CURRENT_CONTACT_CLONE', payload);
+    },
+    SET_CURRENT_PHOTO: async (context, payload: string) => {
+      context.commit('SET_CURRENT_PHOTO', payload);
     },
     UPDATE_CONTACT: async (context, payload: Contact) => {
       // Действие обновления контакта: если идентификатор контакта не задан,
@@ -259,6 +286,12 @@ export default new Vuex.Store({
     },
     CLOSE_DIALOG: async (context) => {
       context.commit('SET_DIALOG_STATE', false);
+    },
+    SHOW_PHOTO_DIALOG: async (context) => {
+      context.commit('SET_PHOTO_DIALOG_STATE', true);
+    },
+    CLOSE_PHOTO_DIALOG: async (context) => {
+      context.commit('SET_PHOTO_DIALOG_STATE', false);
     },
     CHANGE_GROUP_TO_FILTER: async (context, payload: Groups) => {
       context.commit('SET_GROUP_TO_FILTER', payload);

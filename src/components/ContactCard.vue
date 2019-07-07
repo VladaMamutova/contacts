@@ -9,7 +9,8 @@
               <v-tooltip bottom>
               <template v-slot:activator="{ on }">
                 <v-avatar size="40px" class="mr-3" v-on="on">
-                <img :src="contact.photo" alt="Фото контакта">
+                <img :src="contact.photo" class="contact-photo"
+                  alt="Фото контакта" @click="showPhotoDialog()">
                 </v-avatar>
               </template>
               <span>Нажмите, чтобы просмотреть или загрузить фото</span>
@@ -108,14 +109,19 @@
       <v-container>
         <v-flex>
           <v-card>
-            <v-img
-              src="https://picsum.photos/350/165?random"
-              height="125"
-              class="grey darken-4"
-            ></v-img>
+            <v-img :src="currentPhoto" aspect-ratio="1" class="grey darken-4"></v-img>
           </v-card>
         </v-flex>
+        <v-flex grow class="py-2">
+          <v-layout class="py-1">URL</v-layout>
+          <v-textarea class="margin-0" v-model="photo" no-resize box rows="3"></v-textarea>
+        </v-flex>
       </v-container>
+      <v-card-actions>
+         <v-spacer></v-spacer>
+        <v-btn flat @click="savePhoto()">Сохранить</v-btn>
+        <v-btn flat color="primary" @click="closePhotoDialog()">Закрыть</v-btn>
+      </v-card-actions>
     </v-card>
    </v-dialog>
   </v-dialog>
@@ -136,7 +142,8 @@ export default class ContactCard extends Vue {
   private emailErrorMessages: string[] = [];
 
   private menu: boolean = false;
-  private photoDialog: boolean = false;
+
+  private defaultPhoto: string = new Contact().photo;
 
   get dialogState() {
       return this.$store.getters.DIALOG_STATE;
@@ -145,6 +152,18 @@ export default class ContactCard extends Vue {
   set dialogState(state: boolean) {
       if (!state) {
         this.closeDialog();
+      }
+  }
+
+  get photoDialog(): boolean {
+    return this.$store.getters.PHOTO_DIALOG_STATE;
+  }
+
+  set photoDialog(state: boolean) {
+      if (state) {
+        this.$store.dispatch('SHOW_PHOTO_DIALOG');
+      } else {
+        this.$store.dispatch('CLOSE_PHOTO_DIALOG');
       }
   }
 
@@ -171,6 +190,34 @@ export default class ContactCard extends Vue {
 
   set contact(value: Contact) {
     this.$store.dispatch('UPDATE_CURRENT_CONTACT_CLONE', value);
+  }
+
+  get currentPhoto(): string {
+    return this.$store.getters.CURRENT_PHOTO;
+  }
+
+  set currentPhoto(value: string) {
+    this.$store.dispatch('SET_CURRENT_PHOTO', value);
+  }
+
+  get photo() {
+    if (this.currentPhoto === this.defaultPhoto) {
+      return '';
+    } else {
+      return this.currentPhoto;
+    }
+  }
+
+  set photo(value: string) {
+    const img: HTMLImageElement = new Image();
+    img.src = value;
+    img.onload = () => { this.currentPhoto =  value; };
+    img.onerror = () => { this.currentPhoto = this.defaultPhoto; };
+  }
+
+  private savePhoto(): void {
+    this.contact.photo = this.currentPhoto;
+    this.photoDialog = false;
   }
 
   private updateContact() {
@@ -235,12 +282,22 @@ export default class ContactCard extends Vue {
     this.closeDialog();
   }
 
+  private showPhotoDialog(): void {
+    this.photo = this.contact.photo;
+    this.photoDialog = true;
+  }
+
+  private closePhotoDialog(): void {
+    this.photoDialog = false;
+  }
+
   private closeDialog(): void {
     this.title = '';
     this.action = '';
     this.deleteAction = '';
     this.emailErrorMessages = [];
     this.$store.dispatch('CLOSE_DIALOG');
+    this.$store.dispatch('SET_CURRENT_PHOTO', '');
   }
 
   private formatDate(date: string): string {
@@ -274,10 +331,27 @@ export default class ContactCard extends Vue {
 }
 </script>
 
-<style scoped>
+<style>
 
 .padding-0 {
   padding: 0px;
+}
+
+.v-textarea.v-text-field--enclosed .v-text-field__slot textarea {
+  margin: 0px;
+}
+
+.v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 0px;
+    height: 0px;
+}
+
+.container {
+  padding-bottom: 0px;
+}
+
+.contactPhoto {
+  object-fit: cover;
 }
 
 .bottom {
