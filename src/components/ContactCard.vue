@@ -4,9 +4,9 @@
       <v-card-title class="grey lighten-4 py-4 title">{{ title }}</v-card-title>
       <v-container grid-list-sm class="pa-4">
         <v-layout row wrap>
-          <v-flex xs12 align-center justify-space-between>
-            <v-layout align-center>
-              <v-flex xs1>
+          <v-flex align-center justify-space-between>
+            <v-layout align-center row wrap>
+              <v-flex class="contact-photo-box">
               <v-tooltip bottom>
               <template v-slot:activator="{ on }">
                 <v-avatar size="50px" class="mr-3" v-on="on">
@@ -17,11 +17,11 @@
               <span>Нажмите, чтобы просмотреть или загрузить фото</span>
               </v-tooltip>
               </v-flex>
-              <v-flex xs7>
+              <v-flex grow>
                 <v-text-field label="ФИО" class="big-text-field" v-model="contact.fio"
                 :input="updateContact()"></v-text-field>
               </v-flex>
-              <v-flex xs4>
+              <v-flex>
                 <v-combobox v-model="selectedGroup"
                 :items="groupsName" chips placeholder="Не определена"
                   clearable prepend-inner-icon="group" label="Группа">
@@ -89,24 +89,27 @@
               </v-flex>
             </v-layout>
           </v-container>
-        <v-flex xs4>
-        <v-menu ref="menu" v-model="menu" :close-on-content-click="false"
-         :nudge-right="40" lazy transition="scale-transition"
-          offset-y full-width max-width="290px" min-width="290px">
-          <template v-slot:activator="{ on }">
-            <v-text-field v-model="dateFormatted" label="Дата рождения"
-              persistent-hint prepend-inner-icon="event"
-              @blur="date = parseDate(dateFormatted)" readonly v-on="on"/>
-          </template>
-          <v-date-picker v-model="contact.birthday" locale="ru" no-title
-          @input="menu = false"></v-date-picker>
-          </v-menu>
-        </v-flex>
-        <v-flex xs8>
-          <v-text-field prepend-inner-icon="business" label="Компания"
-            v-model="contact.company" :input="updateContact()"></v-text-field>
-          </v-flex>
-        <v-flex xs12>
+          <v-layout row wrap>
+            <v-flex>
+            <v-menu ref="menu" v-model="menu" :close-on-content-click="false"
+             :nudge-right="40" lazy transition="scale-transition"
+              offset-y full-width max-width="290px" min-width="290px">
+              <template v-slot:activator="{ on }">
+                <v-text-field v-model="dateFormatted" label="Дата рождения"
+                  persistent-hint prepend-inner-icon="event"
+                  @blur="date = parseDate(dateFormatted)" readonly v-on="on"/>
+              </template>
+              <v-date-picker v-model="contact.birthday" locale="ru" no-title
+              @input="menu = false"></v-date-picker>
+              </v-menu>
+            </v-flex>
+            <v-flex>
+              <v-text-field prepend-inner-icon="business" label="Компания"
+                v-model="contact.company" :input="updateContact()">
+              </v-text-field>
+            </v-flex>
+          </v-layout>
+          <v-flex xs12>
           <v-text-field prepend-inner-icon="language" label="Веб-сайт"
             v-model="contact.website" :input="updateContact()"></v-text-field>
         </v-flex>
@@ -394,6 +397,10 @@ export default class ContactCard extends Vue {
 
 .container {
   padding-bottom: 0px;
+}
+
+.contact-photo-box {
+  max-width: 60px;
 }
 
 .contactPhoto {

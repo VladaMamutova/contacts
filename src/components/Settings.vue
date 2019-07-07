@@ -5,7 +5,7 @@
       <v-list subheader>
          <v-subheader>Настройки</v-subheader>
          <div class="button">
-           <v-btn large @click="fillDefaultContactList()">Загрузить список по умолчанию</v-btn>
+           <v-btn large @click="fillDefaultContactList()">Cписок по умолчанию</v-btn>
            <v-btn large @click="clearContactList()">Очистить список</v-btn>
          </div>
        </v-list>

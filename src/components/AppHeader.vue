@@ -5,18 +5,6 @@
         <span class="text-uppercase">Контакты</span>
         <span class="font-weight-light">НайдиВсех</span>
       </v-toolbar-title>
-      <v-text-field
-        flat
-        solo-inverted
-        hide-details
-        prepend-inner-icon="search"
-        label="Поиск"
-        class="hidden-sm-and-down"
-      ></v-text-field>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>notifications</v-icon>
-      </v-btn>
     </v-toolbar>
 </template>
 
