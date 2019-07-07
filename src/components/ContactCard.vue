@@ -6,17 +6,33 @@
         <v-layout row wrap>
           <v-flex xs12 align-center justify-space-between>
             <v-layout align-center>
+              <v-flex xs1>
               <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-avatar size="40px" class="mr-3" v-on="on">
+                <v-avatar size="50px" class="mr-3" v-on="on">
                 <img :src="contact.photo" class="contact-photo"
                   alt="Фото контакта" @click="showPhotoDialog()">
                 </v-avatar>
               </template>
               <span>Нажмите, чтобы просмотреть или загрузить фото</span>
               </v-tooltip>
-              <v-text-field label="ФИО" v-model="contact.fio"
-              :input="updateContact()"></v-text-field>
+              </v-flex>
+              <v-flex xs7>
+                <v-text-field label="ФИО" class="big-text-field" v-model="contact.fio"
+                :input="updateContact()"></v-text-field>
+              </v-flex>
+              <v-flex xs4>
+                <v-combobox v-model="selectedGroup"
+                :items="groupsName" chips placeholder="Не определена"
+                  clearable prepend-inner-icon="group" label="Группа">
+                  <template v-slot:selection="data">
+                    <v-chip :selected="data.selected" :color="contact.group.color"
+                      text-color="white" close @input="remove(data.item)">
+                      <strong>{{ data.item }}</strong>&nbsp;
+                    </v-chip>
+                  </template>
+                </v-combobox>
+              </v-flex>
             </v-layout>
           </v-flex>
           <v-container fluid class="padding-0">
@@ -47,8 +63,8 @@
           </v-container>
           <v-container fluid class="padding-0 bottom">
             <v-layout row class="label">
-             <v-flex class="padding-0">
-               <v-card-text class="px-0">Email</v-card-text>
+            <v-flex class="padding-0">
+              <v-card-text class="px-0">Email</v-card-text>
             </v-flex>
              <v-flex xs1>
                 <v-btn flat icon color="primary" @click="addEmailField()">
@@ -79,7 +95,7 @@
           offset-y full-width max-width="290px" min-width="290px">
           <template v-slot:activator="{ on }">
             <v-text-field v-model="dateFormatted" label="Дата рождения"
-              persistent-hint prepend-icon="event"
+              persistent-hint prepend-inner-icon="event"
               @blur="date = parseDate(dateFormatted)" readonly v-on="on"/>
           </template>
           <v-date-picker v-model="contact.birthday" locale="ru" no-title
@@ -130,6 +146,8 @@
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator';
 import Contact from '../types/contact';
+import Group from '../types/group';
+import Groups from '../types/groups';
 
 @Component({})
 
@@ -143,10 +161,12 @@ export default class ContactCard extends Vue {
 
   private menu: boolean = false;
 
+  private groups: Group[] = [new Group(Groups.Family),
+    new Group(Groups.Friends), new Group(Groups.Сolleagues)];
   private defaultPhoto: string = new Contact().photo;
 
   get dialogState() {
-      return this.$store.getters.DIALOG_STATE;
+    return this.$store.getters.DIALOG_STATE;
   }
 
   set dialogState(state: boolean) {
@@ -215,6 +235,24 @@ export default class ContactCard extends Vue {
     img.onerror = () => { this.currentPhoto = this.defaultPhoto; };
   }
 
+  get selectedGroup(): string {
+    if (this.contact.group.key === Groups.None) {
+      return '';
+    } else {
+      return this.contact.group.name;
+    }
+  }
+
+  set selectedGroup(value: string) {
+    this.contact.group = this.groups.find(
+      (group: Group) => group.name === value) || new Group(Groups.None);
+    this.updateContact();
+  }
+
+  get groupsName(): string[] {
+    return this.groups.map((group: Group) => group.name);
+  }
+
   private savePhoto(): void {
     this.contact.photo = this.currentPhoto;
     this.photoDialog = false;
@@ -230,6 +268,10 @@ export default class ContactCard extends Vue {
 
   private deletePhoneField(index: number): void {
     this.contact.phones.splice(index, 1);
+  }
+
+  private remove(item: string): void {
+    this.contact.group = new Group(Groups.None);
   }
 
   private addEmailField(index: number): void {
@@ -335,6 +377,10 @@ export default class ContactCard extends Vue {
 
 .padding-0 {
   padding: 0px;
+}
+
+.big-text-field {
+  margin-top: 14px;
 }
 
 .v-textarea.v-text-field--enclosed .v-text-field__slot textarea {
